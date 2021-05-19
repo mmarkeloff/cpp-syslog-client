@@ -1,10 +1,10 @@
 language: cpp
 
-compiler:  
+compiler:
     - gcc
     - clang
 
-before_script:  
+before_script:
     - mkdir test/unit/build
     - cd test/unit/build
     - cmake ..
