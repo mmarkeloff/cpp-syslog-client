@@ -10,7 +10,7 @@ C++ header only stream-based syslog client library.
 #include <syslog_client.hpp>
 
 int main(int argc, char* argv[]) {
-	syslog::ostream syslogClient;
+    syslog::ostream syslogClient;
 
     // by default syslog client configured on 127.0.0.1:514
     // so you can overwrite it
@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 
     syslogClient << LogLvlMng::LL_INFO << "message" << std::endl;
 
-	return 0;
+    return 0;
 }
 ```
 
