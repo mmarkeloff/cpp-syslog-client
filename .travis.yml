@@ -1,0 +1,13 @@
+language: cpp
+
+compiler:  
+    - gcc
+    - clang
+
+before_script:  
+    - mkdir test/unit/build
+    - cd test/unit/build
+    - cmake ..
+    - make
+
+script: make test
