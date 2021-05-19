@@ -44,21 +44,21 @@ namespace syslog {
     /**
      * Syslog buffer
      */
-	class streambuf final : public std::streambuf {
+    class streambuf final : public std::streambuf {
     private:
-		std::string                   m_Buf; ///< data
+        std::string                   m_Buf; ///< data
         syslog::LockByMUTEX*          m_Mtx; ///< mutex
-		syslog::LogLvlMng::LogLvl     m_Lvl; ///< log severity level
+        syslog::LogLvlMng::LogLvl     m_Lvl; ///< log severity level
         syslog::SockWrap              m_Sock; ///< socket
         syslog::FacilityMng::Facility m_Facility; ///< log facility
         syslog::ProcID                m_ProcID; ///< process ID
-	public:
+    public:
         /**
          * Ctor
          * 
          * @warning m_Mtx is nullptr by default !!!
          */
-		explicit streambuf(
+        explicit streambuf(
         ) : 
             m_Mtx{nullptr},
             m_Lvl{syslog::LogLvlMng::LogLvl::LL_DEBUG}, 
@@ -70,7 +70,7 @@ namespace syslog {
          *
          * @param[in] mtx mutex
          */
-		void setMtx(syslog::LockByMUTEX& mtx) noexcept { m_Mtx = &mtx; }
+        void setMtx(syslog::LockByMUTEX& mtx) noexcept { m_Mtx = &mtx; }
 
         /**
          * Setter
@@ -79,7 +79,7 @@ namespace syslog {
          *
          * @warning By default, log severity level is syslog::LogLvlMng::LogLvl::LL_DEBUG
          */
-		void setLvl(syslog::LogLvlMng::LogLvl lvl) noexcept { m_Lvl = lvl; }
+        void setLvl(syslog::LogLvlMng::LogLvl lvl) noexcept { m_Lvl = lvl; }
 
         /**
          * Setter
@@ -116,12 +116,12 @@ namespace syslog {
          * @warning By default, log facility is syslog::FacilityMng::Facility::LF_LOCAL7
          */
         void setFacility(syslog::FacilityMng::Facility facility) noexcept { m_Facility = facility; }
-	protected:
+    protected:
         /**
          * Send data to syslog
          */
-		int sync() {
-			if (m_Buf.size()) {
+        int sync() {
+            if (m_Buf.size()) {
                 if (m_Sock.isInitialised()) {
                     char pri[32];
                     sprintf(
@@ -139,49 +139,49 @@ namespace syslog {
                     m_Sock.send(data);
                 }
 
-				m_Buf.erase();
-			}
+                m_Buf.erase();
+            }
 
             if (m_Mtx) // cannot be nullptr here
                 m_Mtx->exit();
 
             return 0;
-		}
+        }
 
         /**
          * Increment data char-by-char and send it to syslog by EOF
          *
          * @param[in] ch char
          */
-		int_type overflow(int_type ch) {
-			if (traits_type::eof() == ch) {
+        int_type overflow(int_type ch) {
+            if (traits_type::eof() == ch) {
                 sync(); // its time to send data to syslog
             }
-			else {
+            else {
                 m_Buf += static_cast<char>(ch);
             }
 
-			return ch;
-		}
-	};
+            return ch;
+        }
+    };
 
     /**
      * Stream-designed syslog client
      */
-	class ostream final : public std::ostream {
+    class ostream final : public std::ostream {
     private:
         static constexpr uint16_t          DEFAULT_SYSLOG_SRV_PORT{514}; ///< default
         static constexpr const char* const DEFAULT_SYSLOG_SRV_ADDR{"127.0.0.1"}; ///< default
     private:
-		streambuf           m_LogBuf; ///< syslog buffer
+        streambuf           m_LogBuf; ///< syslog buffer
         const char*         m_Addr; ///< syslog server addr
         uint16_t            m_Port; ///< syslog server port
         syslog::LockByMUTEX m_Mtx; ///< mutex
-	public:
+    public:
         /**
          * Ctor
          */
-		explicit ostream(
+        explicit ostream(
         ) : 
             std::ostream{&m_LogBuf}, 
             m_Addr{DEFAULT_SYSLOG_SRV_ADDR},
@@ -203,7 +203,7 @@ namespace syslog {
          *
          * @warning By default, log severity level is syslog::LogLvlMng::LogLvl::LL_DEBUG
          */
-		void setLvl(syslog::LogLvlMng::LogLvl lvl) noexcept { m_LogBuf.setLvl(lvl); }
+        void setLvl(syslog::LogLvlMng::LogLvl lvl) noexcept { m_LogBuf.setLvl(lvl); }
 
         /**
          * Setter
@@ -244,7 +244,7 @@ namespace syslog {
          * @return Mutex
          */
         syslog::LockByMUTEX& getMtx() noexcept { return m_Mtx; }
-	};
+    };
 
     /**
      * Set log severity level in stream
@@ -252,7 +252,7 @@ namespace syslog {
      * @param[in] os stream
      * @param[in] lvl log severity level
      */
-	inline ostream& operator<<(
+    inline ostream& operator<<(
         ostream& os, 
         const syslog::LogLvlMng::LogLvl lvl
     ) 

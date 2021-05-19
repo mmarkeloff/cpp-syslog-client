@@ -35,9 +35,9 @@ using namespace syslog;
 //
 class TestSockWrap : public ::testing::Test {
 protected:
-	void SetUp() { }
+    void SetUp() { }
 
-	void TearDown() { }
+    void TearDown() { }
 };
 
 ////////////////////////////////////////////////////////////////////////////

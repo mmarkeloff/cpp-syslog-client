@@ -117,7 +117,7 @@ public:
     SockWrap& operator=(SockWrap&& sock) {
         // self-assignment check
         if (&sock == this)
-			return *this;
+            return *this;
 
         m_Addr = sock.m_Addr;
         m_Port = sock.m_Port;

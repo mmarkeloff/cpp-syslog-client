@@ -40,14 +40,14 @@ class TestSyslogClient : public ::testing::Test {
 protected:
     static constexpr const char* const logPath{"/var/log/syslog"};
 protected:
-	void SetUp() { }
+    void SetUp() { }
 
-	void TearDown() { }
+    void TearDown() { }
 
     std::string tail(std::ifstream& in) {
-	    std::string res;
-	    while (in >> std::ws && std::getline(in, res));
-	    return res;
+        std::string res;
+        while (in >> std::ws && std::getline(in, res));
+        return res;
     }
 };
 
