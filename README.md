@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
     syslogClient.setAddr("127.0.0.1");
     syslogClient.setPort(1000);
 
-    syslogClient << LogLvlMng::LL_INFO << "message" << std::endl;
+    syslogClient << syslog::LogLvlMng::LL_INFO << "message" << std::endl;
 
     return 0;
 }
