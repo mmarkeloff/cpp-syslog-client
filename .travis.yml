@@ -23,14 +23,14 @@ jobs:
   include:
     - stage: "Unit tests"
       name: "Unit tests"
-      script: mkdir test/unit/build && cd test/unit/build && cmake .. && make && make test
+      script: ./ci/test.sh
     - stage: "Integration tests"
       name: "Integration tests"
       script: docker run cpp-syslog-client
 
 deploy:
   provider: pages
-  local_dir: ../../../html
+  local_dir: html
   github_token: $GH_REPO_TOKEN
   on:
     branch: main
