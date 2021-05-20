@@ -4,10 +4,21 @@ compiler:
     - gcc
     - clang
 
+services:
+    - docker
+
 before_script:
+    - docker build -t cpp-syslog-client -f test_pkg/Dockerfile .
     - mkdir test/unit/build
     - cd test/unit/build
     - cmake ..
     - make
 
-script: make test
+jobs:
+  include:
+    - stage: "Unit tests"
+      name: "Unit tests"
+      script: make test
+    - stage: "Integration tests"
+      name: "Integration tests"
+      script: docker run cpp-syslog-client
