@@ -7,5 +7,6 @@ before_script:
     - mkdir test/unit/build
     - cd test/unit/build
     - cmake ..
+    - make
 
-script: make
+script: make test
