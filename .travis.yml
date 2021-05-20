@@ -14,6 +14,10 @@ addons:
   apt:
     packages:
       - doxygen
+      - doxygen-doc
+      - doxygen-latex
+      - doxygen-gui
+      - graphviz
 
 before_script:
     - doxygen Doxyfile
@@ -31,6 +35,7 @@ jobs:
 deploy:
   provider: pages
   cleanup: false
+  local_dir: html
   github_token: $GH_REPO_TOKEN
   on:
     branch: main
