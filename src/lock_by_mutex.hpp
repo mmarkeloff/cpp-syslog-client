@@ -64,11 +64,17 @@ public:
         return m_isEntered;
     }
 
+    /**
+     * Release the mutex
+     */
     void exit() noexcept { 
         m_isEntered = false;
         m_Mtx.unlock(); 
     }
 
+    /**
+     * Mutex is already captured?
+     */
     bool isEntered() const noexcept { return m_isEntered; }
 };
 
