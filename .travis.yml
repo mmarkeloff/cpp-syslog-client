@@ -1,10 +1,19 @@
 language: cpp
 
+branches:
+  only:
+    - master
+
 compiler:
     - gcc
 
 services:
     - docker
+
+addons:
+  apt:
+    packages:
+      - doxygen
 
 before_script:
     - docker build -t cpp-syslog-client -f test_pkg/Dockerfile .
@@ -21,3 +30,13 @@ jobs:
     - stage: "Integration tests"
       name: "Integration tests"
       script: docker run cpp-syslog-client
+    - stage: "Build docs"
+      name: "Build docs"
+      script: doxygen Doxyfile
+
+deploy:
+  provider: pages
+  local_dir: docs/html
+  github_token: $GH_REPO_TOKEN
+  on:
+    branch: master
