@@ -26,9 +26,6 @@
 
 set -e
 
-ls -l
-ls -l html/
-
 mkdir test/unit/build
 cd test/unit/build
 
