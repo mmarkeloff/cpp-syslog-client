@@ -31,7 +31,6 @@ jobs:
 deploy:
   provider: pages
   cleanup: false
-  local_dir: html
   github_token: $GH_REPO_TOKEN
   on:
     branch: main
