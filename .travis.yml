@@ -24,15 +24,15 @@ before_script:
 
 jobs:
   include:
+    - stage: "Build docs"
+      name: "Build docs"
+      script: doxygen Doxyfile
     - stage: "Unit tests"
       name: "Unit tests"
       script: make test
     - stage: "Integration tests"
       name: "Integration tests"
       script: docker run cpp-syslog-client
-    - stage: "Build docs"
-      name: "Build docs"
-      script: doxygen Doxyfile
 
 deploy:
   provider: pages
