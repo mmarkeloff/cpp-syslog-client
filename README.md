@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/mmarkeloff/cpp-syslog-client.svg?branch=main)](https://travis-ci.com/mmarkeloff/cpp-syslog-client)
+
 <h1 align="center">
 cpp-syslog-client
 </h1>
