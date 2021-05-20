@@ -15,11 +15,19 @@ addons:
     packages:
       - doxygen
 
-before_script:
+script:
     - doxygen Doxyfile
+
+deploy:
+  provider: pages
+  local_dir: docs/html
+  github_token: $GH_REPO_TOKEN
+  on:
+    branch: main
+
+before_script:
     - docker build -t cpp-syslog-client -f test_pkg/Dockerfile .
-    - mkdir test/unit/build
-    - cd test/unit/build
+    - mkdir test/unit/build && cd test/unit/build
     - cmake ..
     - make
 
@@ -31,10 +39,3 @@ jobs:
     - stage: "Integration tests"
       name: "Integration tests"
       script: docker run cpp-syslog-client
-
-deploy:
-  provider: pages
-  local_dir: docs/html
-  github_token: $GH_REPO_TOKEN
-  on:
-    branch: main
