@@ -73,3 +73,7 @@ enum Facility {
 };
 ```
 
+## Documentation
+
+See automatic generated [docs](https://mmarkeloff.github.io/cpp-syslog-client/) for more information.
+
