@@ -33,7 +33,7 @@ RUN apt-get update && \
 ADD ./include /app/include
 ADD ./src /app/src 
 ADD ./test/integration /app/test/integration
-ADD ./externals /app/externals
+ADD ./cmake /app/cmake
 
 COPY test_pkg/bootup.sh /app/bootup.sh
 COPY test_pkg/cpp-syslog-client.conf /etc/syslog-ng/conf.d/cpp-syslog-client.conf

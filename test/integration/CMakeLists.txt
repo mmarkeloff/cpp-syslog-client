@@ -37,7 +37,7 @@ else()
     set(UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
 endif()
 
-include(../../externals/DownloadProject.cmake)
+include(../../cmake/DownloadProject.cmake)
 
 download_project(
     PROJ googletest
