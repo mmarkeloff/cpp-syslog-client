@@ -28,12 +28,6 @@
 #ifndef __CPP_SYSLOG_CLIENT_FACILITY_HPP
 #define __CPP_SYSLOG_CLIENT_FACILITY_HPP
 
-#include <map>
-#include <algorithm>
-
-#define STR2FACILITY_ITEM const char*, syslog::FacilityMng::Facility
-#define FACILITY2STR_ITEM syslog::FacilityMng::Facility, const char*
-
 /**
  * Lib space
  */
