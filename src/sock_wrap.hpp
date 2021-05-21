@@ -38,9 +38,9 @@
 #endif // WIN32
 
 #if defined(WIN32)
- #define CLOSE_SOCKET_CALL closesocket
+ #define CLOSE_SOCKET_CALL closesocket ///< int closesocket(SOCKET s);
 #else
- #define CLOSE_SOCKET_CALL close
+ #define CLOSE_SOCKET_CALL close ///< int close(int fd);
 #endif // WIN32
 
 #include <string>

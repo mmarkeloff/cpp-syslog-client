@@ -37,11 +37,11 @@
 #include <string>
 
 #if defined(WIN32)
- #define PROC_ID_TYPE     DWORD
- #define GET_PROC_ID_CALL GetCurrentProcessId
+ #define PROC_ID_TYPE     DWORD ///< GetCurrentProcessId() return type
+ #define GET_PROC_ID_CALL GetCurrentProcessId ///< DWORD GetCurrentProcessId();
 #else
- #define PROC_ID_TYPE     pid_t
- #define GET_PROC_ID_CALL getpid
+ #define PROC_ID_TYPE     pid_t ///< getpid() return type
+ #define GET_PROC_ID_CALL getpid ///< pid_t getpid(void);
 #endif // WIN32
 
 /**
