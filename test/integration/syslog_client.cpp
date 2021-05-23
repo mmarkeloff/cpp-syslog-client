@@ -109,3 +109,22 @@ TEST_F(TestSyslogClient, sendErrorMessagesByMultiplyThreads) {
     for (auto& thread : threads) 
         thread.join();
 }
+
+TEST_F(TestSyslogClient, eachThreadHasHisOwnSyslogClientInstance) {
+    auto f = []() {
+        std::ostringstream ss;
+        ss << std::this_thread::get_id();
+
+        ostream syslog;
+        syslog << LogLvlMng::LL_WARNING << "Test message from thread: " << ss.str() << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    };
+
+    std::vector<std::thread> threads;
+
+    for (std::size_t i = 0; i < 16; i++)
+        threads.push_back(std::thread{f});
+
+    for (auto& thread : threads) 
+        thread.join();
+}
