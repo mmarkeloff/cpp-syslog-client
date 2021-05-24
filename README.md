@@ -25,6 +25,10 @@ int main(int argc, char* argv[]) {
 }
 ```
 
+## Examples
+
+See [sample project](sample) for more complete usage examples.
+
 ## Library details
 
 ### Log levels

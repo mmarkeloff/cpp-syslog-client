@@ -168,6 +168,8 @@ namespace syslog {
 
     /**
      * Stream-designed syslog client
+     * 
+     * @example main.cpp
      */
     class ostream final : public std::ostream {
     private:
