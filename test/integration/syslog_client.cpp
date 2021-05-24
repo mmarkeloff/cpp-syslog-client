@@ -1,6 +1,6 @@
 /**
- * @file      syslog_client.cpp
- * @authors   Max Markeloff (https://github.com/mmarkeloff)
+ * @file syslog_client.cpp
+ * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
 // MIT License

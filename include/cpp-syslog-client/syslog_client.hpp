@@ -1,6 +1,6 @@
 /**
- * @file      syslog_client.hpp
- * @authors   Max Markeloff (https://github.com/mmarkeloff)
+ * @file syslog_client.hpp
+ * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
 // MIT License
@@ -180,6 +180,22 @@ namespace syslog {
         const char*         m_Addr; ///< syslog server addr
         uint16_t            m_Port; ///< syslog server port
         syslog::LockByMUTEX m_Mtx; ///< mutex
+    protected:
+        /**
+         * Setter
+         *
+         * @param[in] lvl log severity level
+         *
+         * @warning By default, log severity level is syslog::LogLvlMng::LogLvl::LL_DEBUG
+         */
+        void setLvl(syslog::LogLvlMng::LogLvl lvl) noexcept { m_LogBuf.setLvl(lvl); }
+
+        /**
+         * Getter
+         * 
+         * @return Mutex
+         */
+        syslog::LockByMUTEX& getMtx() noexcept { return m_Mtx; }
     public:
         /**
          * Ctor
@@ -198,15 +214,6 @@ namespace syslog {
             m_LogBuf.setMtx(m_Mtx);
             m_LogBuf.setSock(std::move(sock));
         }
-
-        /**
-         * Setter
-         *
-         * @param[in] lvl log severity level
-         *
-         * @warning By default, log severity level is syslog::LogLvlMng::LogLvl::LL_DEBUG
-         */
-        void setLvl(syslog::LogLvlMng::LogLvl lvl) noexcept { m_LogBuf.setLvl(lvl); }
 
         /**
          * Setter
@@ -242,20 +249,15 @@ namespace syslog {
         void setFacility(syslog::FacilityMng::Facility facility) noexcept { m_LogBuf.setFacility(facility); }
 
         /**
-         * Getter
-         * 
-         * @return Mutex
-         */
-        syslog::LockByMUTEX& getMtx() noexcept { return m_Mtx; }
+         * Set log severity level in stream
+         *
+         * @param[in] os stream
+         * @param[in] lvl log severity level
+        */
+        friend ostream& operator<<(ostream& os, const syslog::LogLvlMng::LogLvl lvl);
     };
 
-    /**
-     * Set log severity level in stream
-     *
-     * @param[in] os stream
-     * @param[in] lvl log severity level
-     */
-    inline ostream& operator<<(
+    ostream& operator<<(
         ostream& os, 
         const syslog::LogLvlMng::LogLvl lvl
     ) 

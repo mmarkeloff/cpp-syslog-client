@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     syslogClient.setFacility(syslog::FacilityMng::LF_LOCAL3);
 
     syslogClient << syslog::LogLvlMng::LL_INFO << "Message number " << 1 << std::endl;
-    syslogClient << "Message number " << 2 << std::endl; // syslog::LogLvlMng::LL_INFO
+    syslogClient << syslog::LogLvlMng::LL_NOTICE << "Message number " << 2 << std::endl;
 
     return 0;
 }
