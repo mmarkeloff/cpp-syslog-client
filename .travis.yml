@@ -25,13 +25,13 @@ before_script:
 
 jobs:
   include:
-    - stage: "Build sample project"
-      name: "Build sample project"
+    - stage: "Build"
+      name: "Sample project"
       script: ./ci/sample.sh
-    - stage: "Unit tests"
+    - stage: "Test"
       name: "Unit tests"
       script: ./ci/test.sh
-    - stage: "Integration tests"
+    - stage: "Test"
       name: "Integration tests"
       script: docker run cpp-syslog-client
 
