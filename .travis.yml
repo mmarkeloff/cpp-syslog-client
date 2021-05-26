@@ -19,21 +19,22 @@ addons:
       - doxygen-gui
       - graphviz
 
-before_script:
-    - doxygen Doxyfile
-    - docker build -t cpp-syslog-client -f test_pkg/Dockerfile .
-
 jobs:
   include:
     - stage: "Build"
       name: "Sample project"
-      script: ./ci/sample.sh
+      script: ./ci/build/sample.sh
+      name: "Unit tests"
+      script: ./ci/build/unit.sh
+      name: "Integration tests"
+      script: ./ci/build/integration.sh
+      name: "Documentation"
+      script: ./ci/build/docs.sh
     - stage: "Test"
       name: "Unit tests"
-      script: ./ci/test.sh
-    - stage: "Test"
+      script: ./ci/test/unit.sh
       name: "Integration tests"
-      script: docker run cpp-syslog-client
+      script: ./ci/test/integration.sh
 
 deploy:
   provider: pages

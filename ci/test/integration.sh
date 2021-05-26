@@ -26,11 +26,6 @@
 
 set -e
 
-mkdir test/unit/build
-cd test/unit/build
-
-cmake .. 
-make
-make test
+docker run cpp-syslog-client
 
 exit 0
