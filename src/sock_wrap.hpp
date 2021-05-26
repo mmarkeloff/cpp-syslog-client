@@ -59,9 +59,9 @@ class syslog::SockWrap final {
 private:
     static constexpr int32_t DEFAULT_SOCK_VALUE{-1}; ///< default
 private:
-    uint32_t       m_Addr; ///< addr
-    uint16_t       m_Port; ///< port
-    int32_t        m_Sock; ///< socket handler
+    uint32_t m_Addr; ///< addr
+    uint16_t m_Port; ///< port
+    int32_t  m_Sock; ///< socket handler
 public:
     /**
      * Ctor by default
