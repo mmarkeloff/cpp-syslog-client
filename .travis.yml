@@ -24,15 +24,19 @@ jobs:
     - stage: "Build"
       name: "Sample project"
       script: ./ci/build/sample.sh
+    - stage: "Build"
       name: "Unit tests"
       script: ./ci/build/unit.sh
+    - stage: "Build"
       name: "Integration tests"
       script: ./ci/build/integration.sh
+    - stage: "Build"
       name: "Documentation"
       script: ./ci/build/docs.sh
     - stage: "Test"
       name: "Unit tests"
       script: ./ci/test/unit.sh
+    - stage: "Test"
       name: "Integration tests"
       script: ./ci/test/integration.sh
 
