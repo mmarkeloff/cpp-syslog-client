@@ -19,11 +19,11 @@ addons:
       - doxygen-gui
       - graphviz
 
+before_script:
+    - ./ci/build/docs.sh
+
 jobs:
   include:
-    - stage: "Build"
-      name: "Documentation"
-      script: ./ci/build/docs.sh
     - stage: "Build"
       name: "Sample project"
       script: ./ci/build/sample.sh
