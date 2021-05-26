@@ -26,6 +26,9 @@
 
 set -e
 
-docker run cpp-syslog-client
+CONT="cpp-syslog-client"
+
+docker build -t "${CONT}" -f test_pkg/Dockerfile .
+docker run "${CONT}"
 
 exit 0

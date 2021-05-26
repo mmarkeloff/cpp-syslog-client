@@ -26,8 +26,13 @@
 
 set -e
 
-cd test/unit/build
+BUILD_PATH="test/unit/build"
 
+mkdir "${BUILD_PATH}"
+cd "${BUILD_PATH}"
+
+cmake .. 
+make
 make test
 
 exit 0

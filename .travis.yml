@@ -14,9 +14,6 @@ addons:
   apt:
     packages:
       - doxygen
-      - doxygen-doc
-      - doxygen-latex
-      - doxygen-gui
       - graphviz
 
 before_script:
@@ -27,12 +24,6 @@ jobs:
     - stage: "Build"
       name: "Sample project"
       script: ./ci/build/sample.sh
-    - stage: "Build"
-      name: "Unit tests"
-      script: ./ci/build/unit.sh
-    - stage: "Build"
-      name: "Integration tests"
-      script: ./ci/build/integration.sh
     - stage: "Test"
       name: "Unit"
       script: ./ci/test/unit.sh

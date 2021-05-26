@@ -26,8 +26,10 @@
 
 set -e
 
-mkdir sample/build
-cd sample/build
+BUILD_PATH="sample/build"
+
+mkdir "${BUILD_PATH}"
+cd "${BUILD_PATH}"
 
 cmake .. 
 make
