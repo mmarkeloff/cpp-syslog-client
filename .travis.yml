@@ -22,6 +22,9 @@ addons:
 jobs:
   include:
     - stage: "Build"
+      name: "Documentation"
+      script: ./ci/build/docs.sh
+    - stage: "Build"
       name: "Sample project"
       script: ./ci/build/sample.sh
     - stage: "Build"
@@ -30,14 +33,11 @@ jobs:
     - stage: "Build"
       name: "Integration tests"
       script: ./ci/build/integration.sh
-    - stage: "Build"
-      name: "Documentation"
-      script: ./ci/build/docs.sh
     - stage: "Test"
-      name: "Unit tests"
+      name: "Unit"
       script: ./ci/test/unit.sh
     - stage: "Test"
-      name: "Integration tests"
+      name: "Integration"
       script: ./ci/test/integration.sh
 
 deploy:
