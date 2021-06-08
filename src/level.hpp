@@ -38,7 +38,7 @@ namespace syslog {
     class LogLvlMng;
 };
 
-class syslog::LogLvlMng {
+class syslog::LogLvlMng final {
 public:
     /**
      * Available log severity levels
@@ -53,11 +53,6 @@ public:
         LL_INFO, ///< INFO
         LL_DEBUG ///< DEBUG
     };
-public:
-    /**
-     * Dtor
-     */ 
-    virtual ~LogLvlMng() = default;
 };
 
 #endif // __CPP_SYSLOG_CLIENT_LEVEL_HPP

@@ -38,7 +38,7 @@ namespace syslog {
     class FacilityMng;
 };
 
-class syslog::FacilityMng {
+class syslog::FacilityMng final {
 public:
     /**
      * Available log facility
@@ -69,11 +69,6 @@ public:
         LF_LOCAL6, ///< LOCAL6
         LF_LOCAL7 ///< LOCAL7
     };
-public:
-    /**
-     * Dtor
-     */ 
-    virtual ~FacilityMng() = default;
 };
 
 #endif // __CPP_SYSLOG_CLIENT_FACILITY_HPP
