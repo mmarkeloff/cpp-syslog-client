@@ -1,6 +1,6 @@
 /**
- * @file      proc_id.hpp
- * @authors   Max Markeloff (https://github.com/mmarkeloff)
+ * @file proc_id.hpp
+ * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
 // MIT License

@@ -1,6 +1,6 @@
 /**
- * @file      level.hpp
- * @authors   Max Markeloff (https://github.com/mmarkeloff)
+ * @file level.hpp
+ * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
 // MIT License

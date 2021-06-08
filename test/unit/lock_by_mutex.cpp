@@ -1,6 +1,6 @@
 /**
- * @file      lock_by_mutex.cpp
- * @authors   Max Markeloff (https://github.com/mmarkeloff)
+ * @file lock_by_mutex.cpp
+ * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
 // MIT License

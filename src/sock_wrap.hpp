@@ -1,6 +1,6 @@
 /**
- * @file      sock_wrap.hpp
- * @authors   Max Markeloff (https://github.com/mmarkeloff)
+ * @file sock_wrap.hpp
+ * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
 // MIT License

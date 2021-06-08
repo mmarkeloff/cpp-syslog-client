@@ -1,4 +1,4 @@
-# @author Max Markeloff (https://github.com/mmarkeloff)
+# authors Max Markeloff (https://github.com/mmarkeloff)
 # 
 # MIT License
 #

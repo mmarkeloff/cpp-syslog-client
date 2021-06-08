@@ -1,6 +1,6 @@
 /**
- * @file      facility.hpp
- * @authors   Max Markeloff (https://github.com/mmarkeloff)
+ * @file facility.hpp
+ * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
 // MIT License
