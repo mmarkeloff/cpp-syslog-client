@@ -104,6 +104,17 @@ TEST_F(TestSyslogClient, sendCompositeMessage) {
     ASSERT_TRUE(std::string::npos != tail(log).find("Notice test message"));
 }
 
+TEST_F(TestSyslogClient, emptyMessage) {
+    ostream syslog;
+    syslog << std::endl;
+}
+
+TEST_F(TestSyslogClient, emptyMessageWithSettingLogLvl) {
+    ostream syslog;
+    syslog << LogLvlMng::LL_EMERG;
+    syslog << std::endl;
+}
+
 #include <vector>
 
 TEST_F(TestSyslogClient, sendErrorMessagesByMultiplyThreads) {
