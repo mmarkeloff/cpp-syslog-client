@@ -89,6 +89,21 @@ TEST_F(TestSyslogClient, sendNoticeMessageSyslogFacility) {
     ASSERT_TRUE(std::string::npos != tail(log).find("Notice syslog facility test message"));
 }
 
+TEST_F(TestSyslogClient, sendCompositeMessage) {
+    ostream syslog;
+
+    syslog << LogLvlMng::LL_NOTICE;
+    syslog << "Notice";
+    syslog << " ";
+    syslog << "test message";
+    syslog << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    ASSERT_TRUE(std::string::npos != tail(log).find("Notice test message"));
+}
+
 #include <vector>
 
 TEST_F(TestSyslogClient, sendErrorMessagesByMultiplyThreads) {
@@ -132,7 +147,10 @@ TEST_F(TestSyslogClient, eachThreadHasHisOwnSyslogClientInstance) {
 TEST_F(TestSyslogClient, sendMessagesWithSavedLogLvlByMultiplyThreads) {
     auto f = [](ostream& syslog) {
         for (auto i = 0; i < 128; ++i) {
-            syslog << "Warning test message from thread: " << std::this_thread::get_id() << std::endl;
+            syslog << i;
+            syslog << " test message from thread: ";
+            syslog << std::this_thread::get_id();
+            syslog << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
     };
