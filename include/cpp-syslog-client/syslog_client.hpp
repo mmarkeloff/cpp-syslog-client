@@ -67,6 +67,26 @@ namespace syslog {
         }
 
         /**
+         * Copy ctor
+         */
+        streambuf(const streambuf&) = delete;
+
+        /**
+         * Copy assignment operator
+         */
+        streambuf& operator=(const streambuf&) = delete;
+
+        /**
+         * Move ctor
+         */
+        streambuf(streambuf&&) = delete;
+
+        /**
+         * Move assignment operator
+         */
+        streambuf& operator=(streambuf&&) = delete;
+
+        /**
          * Setter
          *
          * @param[in] mtx mutex
@@ -198,6 +218,26 @@ namespace syslog {
             m_LogBuf.setMtx(m_Mtx);
             m_LogBuf.setSock(std::move(sock));
         }
+
+        /**
+         * Copy ctor
+         */
+        ostream(const ostream&) = delete;
+
+        /**
+         * Copy assignment operator
+         */
+        ostream& operator=(const ostream&) = delete;
+
+        /**
+         * Move ctor
+         */
+        ostream(ostream&&) = delete;
+
+        /**
+         * Move assignment operator
+         */
+        ostream& operator=(ostream&&) = delete;
 
         /**
          * Setter
