@@ -62,7 +62,6 @@ include_directories(../../src)
 add_executable(
     cpp-syslog-client-unit-tests
     proc_id.cpp
-    lock_by_mutex.cpp
     sock_wrap.cpp
 )
 

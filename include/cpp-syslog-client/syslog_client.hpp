@@ -31,11 +31,11 @@
 #include <iostream>
 #include <streambuf>
 #include <string>
+#include <mutex>
 
 #include "facility.hpp"
 #include "level.hpp"
 #include "proc_id.hpp"
-#include "lock_by_mutex.hpp"
 #include "sock_wrap.hpp"
 
 /**
@@ -47,12 +47,12 @@ namespace syslog {
      */
     class streambuf final : public std::streambuf {
     private:
-        std::string                   m_Buf; ///< data
-        syslog::LockByMUTEX*          m_Mtx; ///< mutex
-        syslog::LogLvlMng::LogLvl     m_Lvl; ///< log severity level
-        syslog::SockWrap              m_Sock; ///< socket
-        syslog::FacilityMng::Facility m_Facility; ///< log facility
-        syslog::ProcID                m_ProcID; ///< process ID
+        std::string           m_Buf; ///< data
+        std::mutex*           m_Mtx; ///< mutex
+        LogLvlMng::LogLvl     m_Lvl; ///< log severity level
+        SockWrap              m_Sock; ///< socket
+        FacilityMng::Facility m_Facility; ///< log facility
+        ProcID                m_ProcID; ///< process ID
     public:
         /**
          * Ctor
@@ -62,8 +62,8 @@ namespace syslog {
         explicit streambuf(
         ) : 
             m_Mtx{nullptr},
-            m_Lvl{syslog::LogLvlMng::LogLvl::LL_DEBUG}, 
-            m_Facility{syslog::FacilityMng::Facility::LF_LOCAL7} {
+            m_Lvl{LogLvlMng::LogLvl::LL_DEBUG}, 
+            m_Facility{FacilityMng::Facility::LF_LOCAL7} {
         }
 
         /**
@@ -71,7 +71,7 @@ namespace syslog {
          *
          * @param[in] mtx mutex
          */
-        void setMtx(syslog::LockByMUTEX& mtx) noexcept { m_Mtx = &mtx; }
+        void setMtx(std::mutex& mtx) noexcept { m_Mtx = &mtx; }
 
         /**
          * Setter
@@ -80,7 +80,7 @@ namespace syslog {
          *
          * @warning By default, log severity level is syslog::LogLvlMng::LogLvl::LL_DEBUG
          */
-        void setLvl(syslog::LogLvlMng::LogLvl lvl) noexcept { m_Lvl = lvl; }
+        void setLvl(LogLvlMng::LogLvl lvl) noexcept { m_Lvl = lvl; }
 
         /**
          * Setter
@@ -89,7 +89,7 @@ namespace syslog {
          * 
          * @warning Socket may be not initialised
          */
-        void setSock(syslog::SockWrap&& sock) noexcept { m_Sock = std::move(sock); }
+        void setSock(SockWrap&& sock) noexcept { m_Sock = std::move(sock); }
 
         /**
          * Setter
@@ -116,13 +116,13 @@ namespace syslog {
          *
          * @warning By default, log facility is syslog::FacilityMng::Facility::LF_LOCAL7
          */
-        void setFacility(syslog::FacilityMng::Facility facility) noexcept { m_Facility = facility; }
+        void setFacility(FacilityMng::Facility facility) noexcept { m_Facility = facility; }
     protected:
         /**
          * Send data to syslog
          */
         int sync() {
-            if (m_Buf.size()) {
+            if (!m_Buf.empty()) {
                 if (m_Sock.isInitialised()) {
                     char pri[32];
                     sprintf(
@@ -144,7 +144,7 @@ namespace syslog {
             }
 
             if (m_Mtx) // cannot be nullptr here
-                m_Mtx->exit();
+                m_Mtx->unlock();
 
             return 0;
         }
@@ -176,10 +176,10 @@ namespace syslog {
         static constexpr uint16_t          DEFAULT_SYSLOG_SRV_PORT{514}; ///< default
         static constexpr const char* const DEFAULT_SYSLOG_SRV_ADDR{"127.0.0.1"}; ///< default
     private:
-        streambuf           m_LogBuf; ///< syslog buffer
-        const char*         m_Addr; ///< syslog server addr
-        uint16_t            m_Port; ///< syslog server port
-        syslog::LockByMUTEX m_Mtx; ///< mutex
+        streambuf   m_LogBuf; ///< syslog buffer
+        const char* m_Addr; ///< syslog server addr
+        uint16_t    m_Port; ///< syslog server port
+        std::mutex  m_Mtx; ///< mutex
     public:
         /**
          * Ctor
@@ -191,7 +191,7 @@ namespace syslog {
             m_Port{DEFAULT_SYSLOG_SRV_PORT}
         {
             // 127.0.0.1:514 by default
-            syslog::SockWrap sock{m_Addr, m_Port};
+            SockWrap sock{m_Addr, m_Port};
 
             sock.init();
 
@@ -230,7 +230,7 @@ namespace syslog {
          *
          * @warning By default, log facility is syslog::FacilityMng::Facility::LF_LOCAL7
          */
-        void setFacility(syslog::FacilityMng::Facility facility) noexcept { m_LogBuf.setFacility(facility); }
+        void setFacility(FacilityMng::Facility facility) noexcept { m_LogBuf.setFacility(facility); }
 
         /**
          * Set log severity level in stream
@@ -238,7 +238,7 @@ namespace syslog {
          * @param[in] os stream
          * @param[in] lvl log severity level
         */
-        friend ostream& operator<<(ostream& os, const syslog::LogLvlMng::LogLvl lvl);
+        friend ostream& operator<<(ostream& os, LogLvlMng::LogLvl lvl);
     protected:
         /**
          * Setter
@@ -247,22 +247,22 @@ namespace syslog {
          *
          * @warning By default, log severity level is syslog::LogLvlMng::LogLvl::LL_DEBUG
          */
-        void setLvl(syslog::LogLvlMng::LogLvl lvl) noexcept { m_LogBuf.setLvl(lvl); }
+        void setLvl(LogLvlMng::LogLvl lvl) noexcept { m_LogBuf.setLvl(lvl); }
 
         /**
          * Getter
          * 
          * @return Mutex
          */
-        syslog::LockByMUTEX& getMtx() noexcept { return m_Mtx; }
+        std::mutex& getMtx() noexcept { return m_Mtx; }
     };
 
     ostream& operator<<(
         ostream& os, 
-        const syslog::LogLvlMng::LogLvl lvl
+        LogLvlMng::LogLvl lvl
     ) 
     { 
-        os.getMtx().enter();
+        os.getMtx().lock();
         os.setLvl(lvl); 
         return os;
     }
