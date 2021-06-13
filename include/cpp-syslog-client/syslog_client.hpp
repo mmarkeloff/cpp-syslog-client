@@ -48,7 +48,7 @@ namespace syslog {
     class streambuf final : public std::streambuf {
     private:
         std::string           m_Buf; ///< data
-        std::mutex*           m_Mtx; ///< mutex
+        std::recursive_mutex* m_Mtx; ///< mutex
         LogLvlMng::LogLvl     m_Lvl; ///< log severity level
         SockWrap              m_Sock; ///< socket
         FacilityMng::Facility m_Facility; ///< log facility
@@ -91,7 +91,7 @@ namespace syslog {
          *
          * @param[in] mtx mutex
          */
-        void setMtx(std::mutex& mtx) noexcept { m_Mtx = &mtx; }
+        void setMtx(std::recursive_mutex& mtx) noexcept { m_Mtx = &mtx; }
 
         /**
          * Setter
@@ -142,6 +142,8 @@ namespace syslog {
          * Send data to syslog
          */
         int sync() override {
+            auto bufLen = m_Buf.length();
+            
             if (!m_Buf.empty()) {
                 if (m_Sock.isInitialised()) {
                     char pri[32];
@@ -163,9 +165,9 @@ namespace syslog {
                 m_Buf.erase();
             }
 
-            if (m_Mtx) // cannot be nullptr here
+            for (auto i = 0; i < bufLen; ++i)
                 m_Mtx->unlock();
-
+            
             return 0;
         }
 
@@ -179,6 +181,7 @@ namespace syslog {
                 sync(); // its time to send data to syslog
             }
             else {
+                m_Mtx->lock();
                 m_Buf += static_cast<char>(ch);
             }
 
@@ -196,10 +199,10 @@ namespace syslog {
         static constexpr uint16_t          DEFAULT_SYSLOG_SRV_PORT{514}; ///< default
         static constexpr const char* const DEFAULT_SYSLOG_SRV_ADDR{"127.0.0.1"}; ///< default
     private:
-        streambuf   m_LogBuf; ///< syslog buffer
-        const char* m_Addr; ///< syslog server addr
-        uint16_t    m_Port; ///< syslog server port
-        std::mutex  m_Mtx; ///< mutex
+        streambuf            m_LogBuf; ///< syslog buffer
+        const char*          m_Addr; ///< syslog server addr
+        uint16_t             m_Port; ///< syslog server port
+        std::recursive_mutex m_Mtx; ///< mutex
     public:
         /**
          * Ctor
@@ -288,13 +291,6 @@ namespace syslog {
          * @warning By default, log severity level is syslog::LogLvlMng::LogLvl::LL_DEBUG
          */
         void setLvl(LogLvlMng::LogLvl lvl) noexcept { m_LogBuf.setLvl(lvl); }
-
-        /**
-         * Getter
-         * 
-         * @return Mutex
-         */
-        std::mutex& getMtx() noexcept { return m_Mtx; }
     };
 
     ostream& operator<<(
@@ -302,7 +298,6 @@ namespace syslog {
         LogLvlMng::LogLvl lvl
     ) 
     { 
-        os.getMtx().lock();
         os.setLvl(lvl); 
         return os;
     }
