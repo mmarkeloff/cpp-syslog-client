@@ -37,12 +37,6 @@
  #include <netinet/in.h>
 #endif // WIN32
 
-#if defined(WIN32)
- #define CLOSE_SOCKET_CALL closesocket ///< int closesocket(SOCKET s);
-#else
- #define CLOSE_SOCKET_CALL close ///< int close(int fd);
-#endif // WIN32
-
 #include <string>
 
 /**
@@ -133,7 +127,11 @@ public:
      */
     ~SockWrap() {
         if (isInitialised())
-            CLOSE_SOCKET_CALL(m_Sock);
+#if defined(WIN32)
+            closesocket(m_Sock);
+#else
+            close(m_Sock);
+#endif // WIN32
     }
 
     /**

@@ -36,14 +36,6 @@
 #include <string.h>
 #include <string>
 
-#if defined(WIN32)
- #define PROC_ID_TYPE     DWORD ///< GetCurrentProcessId() return type
- #define GET_PROC_ID_CALL GetCurrentProcessId ///< DWORD GetCurrentProcessId();
-#else
- #define PROC_ID_TYPE     pid_t ///< getpid() return type
- #define GET_PROC_ID_CALL getpid ///< pid_t getpid(void);
-#endif // WIN32
-
 /**
  * Lib space
  */
@@ -52,23 +44,38 @@ namespace syslog {
      * Class for handle platform specific process ID type
      */
     class ProcID;
+
+#if defined(WIN32)
+    using proc_id_t = DWORD; ///< GetCurrentProcessId() return type
+#else
+    using proc_id_t = pid_t; ///< getpid() return type
+#endif // WIN32
 };
 
 class syslog::ProcID final {
 private:
-    PROC_ID_TYPE m_ProcID; ///< process ID <DWORD|pid_t>
+    proc_id_t m_ProcID; ///< process ID <DWORD|pid_t>
 public:
     /**
      * Ctor
      */
-    ProcID() : m_ProcID{GET_PROC_ID_CALL()} {}
+    ProcID(
+    ) : 
+        m_ProcID{
+#if defined(WIN32)
+        GetCurrentProcessId()
+#else
+        getpid()
+#endif // WIN32
+        } {
+    }
 
     /**
      * Get process ID 
      *
      * @return <DWORD|pid_t>
      */
-    PROC_ID_TYPE get() const noexcept { return m_ProcID; }
+    proc_id_t get() const noexcept { return m_ProcID; }
 
     /**
      * Get process ID in hex format (string)

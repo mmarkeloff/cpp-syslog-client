@@ -121,7 +121,7 @@ namespace syslog {
         /**
          * Send data to syslog
          */
-        int sync() {
+        int sync() override {
             if (!m_Buf.empty()) {
                 if (m_Sock.isInitialised()) {
                     char pri[32];
