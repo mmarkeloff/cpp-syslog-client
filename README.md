@@ -9,7 +9,7 @@ C++ header only stream-based syslog client library.
 ## Usage
 
 ```cpp
-#include <syslog_client.hpp>
+#include "syslog_client.hpp"
 
 int main(int argc, char* argv[]) {
     syslog::ostream syslogClient;
