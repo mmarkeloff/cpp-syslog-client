@@ -25,7 +25,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <syslog_client.hpp>
+#include "syslog_client.hpp"
 
 int main(int argc, char* argv[]) {
     syslog::ostream syslogClient;
