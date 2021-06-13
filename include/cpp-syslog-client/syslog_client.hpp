@@ -59,7 +59,7 @@ namespace syslog {
          * 
          * @warning m_Mtx is nullptr by default !!!
          */
-        explicit streambuf(
+        streambuf(
         ) : 
             m_Mtx{nullptr},
             m_Lvl{LogLvlMng::LogLvl::LL_DEBUG}, 
@@ -154,7 +154,7 @@ namespace syslog {
          *
          * @param[in] ch char
          */
-        int_type overflow(int_type ch) {
+        int_type overflow(int_type ch) override {
             if (traits_type::eof() == ch) {
                 sync(); // its time to send data to syslog
             }
@@ -184,7 +184,7 @@ namespace syslog {
         /**
          * Ctor
          */
-        explicit ostream(
+        ostream(
         ) : 
             std::ostream{&m_LogBuf}, 
             m_Addr{DEFAULT_SYSLOG_SRV_ADDR},

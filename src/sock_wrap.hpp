@@ -68,7 +68,7 @@ public:
      *
      * @warning See syslog::streambuf
      */
-    explicit SockWrap() = default;
+    SockWrap() = default;
 
     /**
      * Ctor

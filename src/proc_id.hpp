@@ -61,7 +61,7 @@ public:
     /**
      * Ctor
      */
-    explicit ProcID() : m_ProcID{GET_PROC_ID_CALL()} {}
+    ProcID() : m_ProcID{GET_PROC_ID_CALL()} {}
 
     /**
      * Get process ID 
