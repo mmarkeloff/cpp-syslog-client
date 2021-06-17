@@ -27,6 +27,10 @@
 
 #include "syslog_client.hpp"
 
+#if defined(WIN32)
+ #pragma comment(lib, "Ws2_32.lib")
+#endif
+
 int main(int argc, char* argv[]) {
     syslog::ostream syslogClient;
     syslogClient.setAddr("127.0.0.1");

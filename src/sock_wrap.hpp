@@ -126,25 +126,27 @@ public:
      * Dtor
      */
     ~SockWrap() {
-        if (isInitialised())
+        if (isInitialised()) {
 #if defined(WIN32)
+            WSACleanup();
             closesocket(m_Sock);
 #else
             close(m_Sock);
 #endif // WIN32
+        }
     }
 
     /**
      * Init socket
      */
     void init() noexcept {
+        if (!isInitialised()) {
 #if defined(WIN32)
-        WSADATA data;
-        WSAStartup(MAKEWORD(1, 1), &data);
+            WSADATA data;
+            WSAStartup(MAKEWORD(1, 1), &data);
 #endif // WIN32
-
-        if (!isInitialised())
             m_Sock = socket(AF_INET, SOCK_DGRAM, 0);
+        }
     }
 
     /**
