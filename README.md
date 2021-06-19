@@ -29,7 +29,9 @@ See [sample project](sample) for more complete usage examples.
 
 ## Library details
 
-### Log levels
+[cpp-syslog-client](https://github.com/mmarkeloff/cpp-syslog-client) fully supports syslog PRI: [RFC]((https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1))
+
+### Log severity level
 
 ```cpp
 enum LogLvl {
@@ -47,7 +49,7 @@ enum LogLvl {
 ### Log facility
 
 ```cpp
-enum Facility {
+enum LogFacility {
     LF_KERN = 0, ///< KERN
     LF_USER, ///< USER
     LF_MAIL, ///< MAIL
