@@ -35,15 +35,20 @@ namespace syslog {
     /**
      * Class for manage log facility
      */
-    class FacilityMng;
+    class LogFacilityMng;
 };
 
-class syslog::FacilityMng final {
+////////////////////////////////////////////////////////////////////////////
+///
+//
+class syslog::LogFacilityMng final {
 public:
     /**
      * Available log facility
+     * 
+     * @link https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1
      */
-    enum Facility {
+    enum LogFacility {
         LF_KERN = 0, ///< KERN
         LF_USER, ///< USER
         LF_MAIL, ///< MAIL

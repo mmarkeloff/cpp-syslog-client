@@ -1,5 +1,5 @@
 /**
- * @file proc_id.cpp
+ * @file winwsa.hpp
  * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
@@ -25,36 +25,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
+#ifndef __CPP_SYSLOG_CLIENT_WINWSA_HPP
+#define __CPP_SYSLOG_CLIENT_WINWSA_HPP
 
-#include <proc_id.hpp>
+#if defined(WIN32)
+#include <windows.h>
 
-using namespace syslog;
+#include "crtp_st.hpp"
+
+/**
+ * Lib space
+ */
+namespace syslog {
+/**
+ * Details
+ */
+namespace details {
+    /**
+     * Class for handling WSAStartup()/WSACleanup()
+     * 
+     * @warning Singleton
+     */
+    class WinWSA;
+};};
 
 ////////////////////////////////////////////////////////////////////////////
 ///
 //
-class TestProcID : public ::testing::Test {
-protected:
-    void SetUp() { }
+class syslog::details::WinWSA final : public crtp_st::Base<WinWSA> {
+private:
+    WSADATA m_WSAData;
+public:
+    WinWSA() { WSAStartup(MAKEWORD(1, 1), &m_WSAData); }
 
-    void TearDown() { }
+    ~WinWSA() { WSACleanup(); }
 };
 
-////////////////////////////////////////////////////////////////////////////
-///
-//
-TEST_F(TestProcID, get) {
-    ASSERT_TRUE(0 != ProcID{}.get());
-}
-
-TEST_F(TestProcID, getInHexFmt) {
-    ASSERT_TRUE("" != ProcID{}.getInHexFmt());
-}
-
-TEST_F(TestProcID, getEqualgetInHexFmt) {
-    char res[32];
-    sprintf(res, "%08x", ProcID{}.get());
-
-    ASSERT_EQ(res, ProcID{}.getInHexFmt());
-}
+#endif // WIN32
+#else
+#error Wrong OS
+#endif // __CPP_SYSLOG_CLIENT_WINWSA_HPP

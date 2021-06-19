@@ -46,6 +46,13 @@ download_project(
     ${UPDATE_DISCONNECTED_IF_AVAILABLE}
 )
 
+download_project(
+    PROJ cpp-crtp-singleton
+    GIT_REPOSITORY https://github.com/mmarkeloff/cpp-crtp-singleton.git
+    GIT_TAG main
+    ${UPDATE_DISCONNECTED_IF_AVAILABLE}
+)
+
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
@@ -59,6 +66,7 @@ endif()
 
 include_directories(../../include/cpp-syslog-client)
 include_directories(../../src)
+include_directories(${cpp-crtp-singleton_SOURCE_DIR}/include/cpp-crtp-singleton)
 
 add_executable(
     cpp-syslog-client-integration-tests

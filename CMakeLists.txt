@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # authors Max Markeloff (https://github.com/mmarkeloff)
 # 
 # MIT License
@@ -24,12 +22,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-set -e
+cmake_minimum_required(VERSION 3.6)
 
-# starting services manually
-/etc/init.d/syslog-ng start 1>/dev/null 2>&1
+project(cpp-syslog-client)
 
-# running integration tests with full output
-/app/test/integration/build/cpp-syslog-client-integration-tests
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED on)
 
-exit 0
+if (CMAKE_VERSION VERSION_LESS 3.2)
+    set(UPDATE_DISCONNECTED_IF_AVAILABLE "")
+else()
+    set(UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
+endif()
+
+include(cmake/DownloadProject.cmake)
+
+download_project(
+    PROJ cpp-crtp-singleton
+    GIT_REPOSITORY https://github.com/mmarkeloff/cpp-crtp-singleton.git
+    GIT_TAG main
+    ${UPDATE_DISCONNECTED_IF_AVAILABLE}
+)

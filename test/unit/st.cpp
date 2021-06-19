@@ -1,5 +1,5 @@
 /**
- * @file main.cpp
+ * @file st.cpp
  * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
@@ -25,44 +25,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <thread>
-#include <chrono>
-#include <vector>
+#include <gtest/gtest.h>
 
-#include "syslog_client.hpp"
+#include "tmode.hpp"
 
-#if defined(WIN32)
- #pragma comment(lib, "Ws2_32.lib")
-#endif
+using namespace syslog::details;
 
 ////////////////////////////////////////////////////////////////////////////
 ///
 //
-int main() {
-    auto syslog{syslog::makeUDPClient_st()};
-    syslog.setFacility(syslog::LogFacilityMng::LF_LOCAL3);
+class TestST : public ::testing::Test {
+protected:
+    void SetUp() { }
 
-    syslog << syslog::LogLvlMng::LL_INFO << "Message " << 1 << std::endl;
+    void TearDown() { }
+};
 
-    auto moved{std::move(syslog)};
+////////////////////////////////////////////////////////////////////////////
+///
+//
+TEST_F(TestST, simpleMainThread) {
+    st mode;
+    mode.lock();
+    mode.unlock();
+    mode.unlock();
+}
 
-    moved << syslog::LogLvlMng::LL_NOTICE << "Message " << 2 << std::endl;
+st G_STMode;
 
-    syslog = syslog::makeUDPClient_mt();
-    syslog.setLvl(syslog::LogLvlMng::LL_EMERG);
-    syslog.setAddr("127.0.0.1");
-    syslog.setPort(514);
+TEST_F(TestST, recursiveMainThread) {
+    G_STMode.lockRec();
+    G_STMode.lockRec();
+    G_STMode.lockRec();
+    G_STMode.unlockRec();
+    G_STMode.unlockRec();
+}
 
-    auto sendMsg = [&](){ 
-        // syslog::LogLvlMng::LL_EMERG
-        syslog << "Message from thread " << std::this_thread::get_id() << std::endl; 
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
-    };
-
-    std::vector<std::thread> threads;
-    for (auto i = 0; i < 8; ++i)
-        threads.push_back(std::thread{sendMsg});
-
-    for (auto& thread : threads) 
-        thread.join();
+TEST_F(TestST, recursiveBySameThread) {
+    G_STMode.lockRec();
+    G_STMode.lockRec();
+    G_STMode.lockRec();
+    G_STMode.unlockRec();
+    G_STMode.unlockRec();
 }

@@ -38,10 +38,15 @@ namespace syslog {
     class LogLvlMng;
 };
 
+////////////////////////////////////////////////////////////////////////////
+///
+//
 class syslog::LogLvlMng final {
 public:
     /**
-     * Available log severity levels
+     * Available log severity level
+     * 
+     * @link https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1
      */
     enum LogLvl {
         LL_EMERG = 0, ///< EMERG

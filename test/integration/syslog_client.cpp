@@ -30,7 +30,7 @@
 
 #include <gtest/gtest.h>
 
-#include <syslog_client.hpp>
+#include "syslog_client.hpp"
 
 using namespace syslog;
 
@@ -58,122 +58,288 @@ protected:
 ////////////////////////////////////////////////////////////////////////////
 ///
 //
-TEST_F(TestSyslogClient, sendDebugMessage) {
-    ostream syslog;
+TEST_F(TestSyslogClient, sendDebugMsgOverUDP_st) {
+    auto syslog{makeUDPClient_st()};
 
-    syslog << LogLvlMng::LL_DEBUG << "Debug test message" << std::endl;
+    syslog << LogLvlMng::LL_DEBUG << "Debug test message (st)" << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     std::ifstream log{logPath};
-    ASSERT_TRUE(std::string::npos == tail(log).find("Debug test message"));
+    ASSERT_TRUE(std::string::npos == tail(log).find("Debug test message (st)"));
 }
 
-TEST_F(TestSyslogClient, sendInfoMessage) {
-    ostream syslog;
+TEST_F(TestSyslogClient, sendDebugMsgOverUDP_mt) {
+    auto syslog{makeUDPClient_mt()};
 
-    syslog << LogLvlMng::LL_INFO << "Info test message" << std::endl;
+    syslog << LogLvlMng::LL_DEBUG << "Debug test message (mt)" << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     std::ifstream log{logPath};
-    ASSERT_TRUE(std::string::npos != tail(log).find("Info test message"));
+    ASSERT_TRUE(std::string::npos == tail(log).find("Debug test message (mt)"));
 }
 
-TEST_F(TestSyslogClient, sendNoticeMessageSyslogFacility) {
-    ostream syslog;
-    syslog.setFacility(FacilityMng::LF_SYSLOG);
+TEST_F(TestSyslogClient, sendInfoMsgOverUDP_st) {
+    auto syslog{makeUDPClient_st()};
 
-    syslog << LogLvlMng::LL_NOTICE << "Notice syslog facility test message" << std::endl;
+    syslog << LogLvlMng::LL_INFO << "Info test message (st)" << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     std::ifstream log{logPath};
-    ASSERT_TRUE(std::string::npos != tail(log).find("Notice syslog facility test message"));
+    ASSERT_TRUE(std::string::npos != tail(log).find("Info test message (st)"));
 }
 
-TEST_F(TestSyslogClient, sendCompositeMessage) {
-    ostream syslog;
+TEST_F(TestSyslogClient, sendInfoMsgOverUDP_mt) {
+    auto syslog{makeUDPClient_mt()};
+
+    syslog << LogLvlMng::LL_INFO << "Info test message (mt)" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    ASSERT_TRUE(std::string::npos != tail(log).find("Info test message (mt)"));
+}
+
+TEST_F(TestSyslogClient, sendNoticeMsgOverUDPSyslogFacility_st) {
+    auto syslog{makeUDPClient_st()};
+    syslog.setFacility(LogFacilityMng::LF_SYSLOG);
+
+    syslog << LogLvlMng::LL_NOTICE << "Notice syslog facility test message (st)" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    ASSERT_TRUE(std::string::npos != tail(log).find("Notice syslog facility test message (st)"));
+}
+
+TEST_F(TestSyslogClient, sendNoticeMsgOverUDPSyslogFacility_mt) {
+    auto syslog{makeUDPClient_mt()};
+    syslog.setFacility(LogFacilityMng::LF_SYSLOG);
+
+    syslog << LogLvlMng::LL_NOTICE << "Notice syslog facility test message (mt)" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    ASSERT_TRUE(std::string::npos != tail(log).find("Notice syslog facility test message (mt)"));
+}
+
+TEST_F(TestSyslogClient, sendCompositeMsgOverUDP_st) {
+    auto syslog{makeUDPClient_st()};
 
     syslog << LogLvlMng::LL_NOTICE;
-    syslog << "Notice";
+    syslog << "Composite";
     syslog << " ";
     syslog << "test message";
+    syslog << " ";
+    syslog << "(st)";
     syslog << std::endl;
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     std::ifstream log{logPath};
-    ASSERT_TRUE(std::string::npos != tail(log).find("Notice test message"));
+    ASSERT_TRUE(std::string::npos != tail(log).find("Composite test message (st)"));
 }
 
-TEST_F(TestSyslogClient, emptyMessage) {
-    ostream syslog;
+TEST_F(TestSyslogClient, sendCompositeMsgOverUDP_mt) {
+    auto syslog{makeUDPClient_mt()};
+
+    syslog << LogLvlMng::LL_NOTICE;
+    syslog << "Composite";
+    syslog << " ";
+    syslog << "test message";
+    syslog << " ";
+    syslog << "(mt)";
+    syslog << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    ASSERT_TRUE(std::string::npos != tail(log).find("Composite test message (mt)"));
+}
+
+TEST_F(TestSyslogClient, emptyMsgOverUDP_st) {
+    auto syslog{makeUDPClient_st()};
     syslog << std::endl;
 }
 
-TEST_F(TestSyslogClient, emptyMessageWithSettingLogLvl) {
-    ostream syslog;
+TEST_F(TestSyslogClient, emptyMsgOverUDP_mt) {
+    auto syslog{makeUDPClient_mt()};
+    syslog << std::endl;
+}
+
+TEST_F(TestSyslogClient, emptyMsgWithSettingLogLvl_st) {
+    auto syslog{makeUDPClient_st()};
     syslog << LogLvlMng::LL_EMERG;
+    syslog << std::endl;
+}
+
+TEST_F(TestSyslogClient, emptyMsgWithSettingLogLvl_mt) {
+    auto syslog{makeUDPClient_mt()};
+    syslog << LogLvlMng::LL_ERR;
     syslog << std::endl;
 }
 
 #include <vector>
 
-TEST_F(TestSyslogClient, sendErrorMessagesByMultiplyThreads) {
-    auto f = [](ostream& syslog) {
-        std::ostringstream ss;
-        ss << std::this_thread::get_id();
+TEST_F(TestSyslogClient, sendErrorMsgs_mt) {
+    auto syslog{makeUDPClient_mt()};
 
-        syslog << LogLvlMng::LL_ERR << "Error test message from thread: " << ss.str() << std::endl;
+    auto sendMsg = [&]() {
+        syslog << LogLvlMng::LL_ERR << "Test message from thread: " << std::this_thread::get_id() << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     };
 
-    ostream syslog;
     std::vector<std::thread> threads;
-
-    for (std::size_t i = 0; i < 16; i++)
-        threads.push_back(std::thread{f, std::ref(syslog)});
+    for (auto i = 0; i < 16; i++)
+        threads.push_back(std::thread{sendMsg});
 
     for (auto& thread : threads) 
         thread.join();
 }
 
-TEST_F(TestSyslogClient, eachThreadHasHisOwnSyslogClientInstance) {
-    auto f = []() {
-        std::ostringstream ss;
-        ss << std::this_thread::get_id();
-
-        ostream syslog;
-        syslog << LogLvlMng::LL_WARNING << "Test message from thread: " << ss.str() << std::endl;
+TEST_F(TestSyslogClient, eachThreadHasHisOwnSyslogClientInst_st) {
+    auto sendMsg = []() {
+        auto syslog{makeUDPClient_st()};
+        syslog << LogLvlMng::LL_WARNING << "Test message from thread: " << std::this_thread::get_id() << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     };
 
     std::vector<std::thread> threads;
-
-    for (std::size_t i = 0; i < 16; i++)
-        threads.push_back(std::thread{f});
+    for (auto i = 0; i < 16; i++)
+        threads.push_back(std::thread{sendMsg});
 
     for (auto& thread : threads) 
         thread.join();
 }
 
-TEST_F(TestSyslogClient, sendMessagesWithSavedLogLvlByMultiplyThreads) {
-    auto f = [](ostream& syslog) {
-        for (auto i = 0; i < 128; ++i) {
+TEST_F(TestSyslogClient, eachThreadHasHisOwnSyslogClientInst_mt) {
+    auto sendMsg = []() {
+        auto syslog{makeUDPClient_mt()};
+        syslog << LogLvlMng::LL_CRIT << "Test message from thread: " << std::this_thread::get_id() << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    };
+
+    std::vector<std::thread> threads;
+    for (auto i = 0; i < 16; i++)
+        threads.push_back(std::thread{sendMsg});
+
+    for (auto& thread : threads) 
+        thread.join();
+}
+
+TEST_F(TestSyslogClient, sendMsgsByLogLvlWasSettedInMainThread_mt) {
+    auto syslog{makeUDPClient_mt()};
+    syslog << LogLvlMng::LL_WARNING;
+
+    auto sendMsg = [&]() {
+        for (auto i = 0; i < 64; ++i) {
+            // syslog::LogLvlMng::LL_WARNING
             syslog << i;
             syslog << " test message from thread: ";
             syslog << std::this_thread::get_id();
             syslog << std::endl;
+
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
     };
 
-    ostream syslog;
-    syslog << LogLvlMng::LL_WARNING;
-
     std::vector<std::thread> threads;
-
-    for (std::size_t i = 0; i < 16; i++)
-        threads.push_back(std::thread{f, std::ref(syslog)});
+    for (auto i = 0; i < 16; i++)
+        threads.push_back(std::thread{sendMsg});
 
     for (auto& thread : threads) 
         thread.join();
+}
+
+TEST_F(TestSyslogClient, sendMsgsByCallingSetters_mt) {
+    auto syslog{makeUDPClient_mt()};
+
+    auto callSettersAndSendMsg = [&](std::size_t id) {
+        for (auto i = 0; i < 32; ++i) {
+            syslog.setAddr("127.0.0.1"); 
+            syslog.setPort(514); 
+
+            if (0 == (id & 1)) {
+                syslog.setLvl(LogLvlMng::LL_ERR); 
+                syslog.setFacility(LogFacilityMng::LF_DAEMON);
+            }
+            else {
+                syslog.setLvl(LogLvlMng::LL_INFO);
+                syslog.setFacility(LogFacilityMng::LF_AUTH);
+            }
+
+            syslog << "Test message" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        }
+    };
+
+    std::vector<std::thread> threads;
+    for (auto i = 0; i < 16; ++i)
+        threads.push_back(std::thread{callSettersAndSendMsg, i});
+
+    for (auto& thread : threads) 
+        thread.join();
+}
+
+TEST_F(TestSyslogClient, sendMsgsByCallingAnotherSetters_mt) {
+    auto syslog{makeUDPClient_mt()};
+
+    auto callSettersAndSendMsg = [&](std::size_t id) {
+        for (auto i = 0; i < 128; ++i) {
+            if (id % 3 == 0) {
+                syslog.setAddr("127.0.0.1"); 
+                syslog.setPort(514); 
+                syslog.setFacility(LogFacilityMng::LF_DAEMON);
+            }
+            else if (id % 2 == 0) {
+                syslog.setAddr("0.0.0.0"); 
+                syslog.setPort(0); 
+                syslog.setFacility(LogFacilityMng::LF_CRON2);
+            }
+            else {
+                syslog.setLvl(LogLvlMng::LL_INFO);
+                syslog.setFacility(LogFacilityMng::LF_AUTH);
+            }
+
+            syslog << "Test message" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        }
+    };
+
+    std::vector<std::thread> threads;
+    for (auto i = 0; i < 32; ++i)
+        threads.push_back(std::thread{callSettersAndSendMsg, i});
+
+    for (auto& thread : threads) 
+        thread.join();
+}
+
+#include <future>
+
+TEST_F(TestSyslogClient, asyncSendMsg_st) {
+    auto syslog{makeUDPClient_st()};
+
+    auto sendMsg = std::async([&]() {
+        syslog << LogLvlMng::LL_INFO << "Async test message (st)" << std::endl;
+    });
+
+    sendMsg.get();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    ASSERT_TRUE(std::string::npos != tail(log).find("Async test message (st)"));
+}
+
+TEST_F(TestSyslogClient, asyncSendMsg_mt) {
+    auto syslog{makeUDPClient_mt()};
+    syslog.setFacility(LogFacilityMng::LF_AUDIT);
+
+    auto sendMsg = std::async([&]() {
+        syslog << LogLvlMng::LL_ERR << "Async test message (mt)" << std::endl;
+    });
+
+    sendMsg.get();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    ASSERT_TRUE(std::string::npos != tail(log).find("Async test message (mt)"));
 }

@@ -28,267 +28,30 @@
 #ifndef __CPP_SYSLOG_CLIENT_SYSLOG_CLIENT_HPP
 #define __CPP_SYSLOG_CLIENT_SYSLOG_CLIENT_HPP
 
-#include <iostream>
-#include <streambuf>
-#include <string>
-#include <mutex>
+#include <memory>
 
-#include "facility.hpp"
-#include "level.hpp"
-#include "proc_id.hpp"
-#include "sock_wrap.hpp"
+#include "../../src/ostream.hpp"
+#include "../../src/client_impl.hpp"
 
 /**
  * Lib space
+ * 
+ * @example main.cpp
  */
 namespace syslog {
     /**
-     * Syslog buffer
+     * Single thread implementation sending messages by UDP
+     * 
+     * @return syslog::ostream
      */
-    class streambuf final : public std::streambuf {
-    private:
-        std::string           m_Buf; ///< data
-        std::recursive_mutex  m_Mtx; ///< mutex
-        LogLvlMng::LogLvl     m_Lvl; ///< log severity level
-        SockWrap              m_Sock; ///< socket
-        FacilityMng::Facility m_Facility; ///< log facility
-        ProcID                m_ProcID; ///< process ID
-    public:
-        /**
-         * Ctor
-         */
-        streambuf(
-        ) : 
-            m_Lvl{LogLvlMng::LogLvl::LL_DEBUG}, 
-            m_Facility{FacilityMng::Facility::LF_LOCAL7} {
-        }
-
-        /**
-         * Copy ctor
-         */
-        streambuf(const streambuf&) = delete;
-
-        /**
-         * Copy assignment operator
-         */
-        streambuf& operator=(const streambuf&) = delete;
-
-        /**
-         * Move ctor
-         */
-        streambuf(streambuf&&) = delete;
-
-        /**
-         * Move assignment operator
-         */
-        streambuf& operator=(streambuf&&) = delete;
-
-        /**
-         * Setter
-         *
-         * @param[in] lvl log severity level
-         *
-         * @warning By default, log severity level is syslog::LogLvlMng::LogLvl::LL_DEBUG
-         */
-        void setLvl(LogLvlMng::LogLvl lvl) noexcept { m_Lvl = lvl; }
-
-        /**
-         * Setter
-         *
-         * @param[in] sock socket
-         * 
-         * @warning Socket may be not initialised
-         */
-        void setSock(SockWrap&& sock) noexcept { m_Sock = std::move(sock); }
-
-        /**
-         * Setter
-         *
-         * @param[in] addr syslog server addr
-         *
-         * @warning By default, syslog server addr is 127.0.0.1
-         */
-        void setAddr(const char* addr) noexcept { m_Sock.setAddr(addr); }
-
-        /**
-         * Setter
-         *
-         * @param[in] port syslog server port
-         *
-         * @warning By default, syslog server port is 514
-         */
-        void setPort(uint16_t port) noexcept { m_Sock.setPort(port); }
-
-        /**
-         * Setter
-         *
-         * @param[in] facility log facility
-         *
-         * @warning By default, log facility is syslog::FacilityMng::Facility::LF_LOCAL7
-         */
-        void setFacility(FacilityMng::Facility facility) noexcept { m_Facility = facility; }
-    protected:
-        /**
-         * Send data to syslog
-         */
-        int sync() override {
-            auto bufLen = m_Buf.length();
-
-            if (!m_Buf.empty()) {
-                if (m_Sock.isInitialised()) {
-                    char pri[32];
-                    sprintf(
-                        pri, 
-                        "<%u>", 
-                        (m_Facility << 3) + m_Lvl
-                    );
-
-                    std::string data{pri};
-                    data += " ";
-                    data += m_ProcID.getInHexFmt();
-                    data += " ";
-                    data += m_Buf;
-
-                    m_Sock.send(data);
-                }
-
-                m_Buf.erase();
-            }
-
-            for (auto i = 0; i < bufLen; ++i)
-                m_Mtx.unlock();
-            
-            return 0;
-        }
-
-        /**
-         * Increment data char-by-char and send it to syslog by EOF
-         *
-         * @param[in] ch char
-         */
-        int_type overflow(int_type ch) override {
-            if (traits_type::eof() == ch) {
-                sync(); // its time to send data to syslog
-            }
-            else {
-                m_Mtx.lock();
-                m_Buf += static_cast<char>(ch);
-            }
-
-            return ch;
-        }
-    };
+    auto makeUDPClient_st() noexcept { return ostream{std::make_unique<UDPClient>(), std::make_unique<details::st>()}; }
 
     /**
-     * Stream-designed syslog client
+     * Multi threads implementation sending messages by UDP
      * 
-     * @example main.cpp
+     * @return syslog::ostream
      */
-    class ostream final : public std::ostream {
-    private:
-        static constexpr uint16_t          DEFAULT_SYSLOG_SRV_PORT{514}; ///< default
-        static constexpr const char* const DEFAULT_SYSLOG_SRV_ADDR{"127.0.0.1"}; ///< default
-    private:
-        streambuf   m_LogBuf; ///< syslog buffer
-        const char* m_Addr; ///< syslog server addr
-        uint16_t    m_Port; ///< syslog server port
-    public:
-        /**
-         * Ctor
-         */
-        ostream(
-        ) : 
-            std::ostream{&m_LogBuf}, 
-            m_Addr{DEFAULT_SYSLOG_SRV_ADDR},
-            m_Port{DEFAULT_SYSLOG_SRV_PORT}
-        {
-            // 127.0.0.1:514 by default
-            SockWrap sock{m_Addr, m_Port};
-
-            sock.init();
-
-            m_LogBuf.setSock(std::move(sock));
-        }
-
-        /**
-         * Copy ctor
-         */
-        ostream(const ostream&) = delete;
-
-        /**
-         * Copy assignment operator
-         */
-        ostream& operator=(const ostream&) = delete;
-
-        /**
-         * Move ctor
-         */
-        ostream(ostream&&) = delete;
-
-        /**
-         * Move assignment operator
-         */
-        ostream& operator=(ostream&&) = delete;
-
-        /**
-         * Setter
-         *
-         * @param[in] addr syslog server addr
-         *
-         * @warning By default, syslog server addr is 127.0.0.1
-         */
-        void setAddr(const char* addr) noexcept { 
-            m_Addr = addr;
-            m_LogBuf.setAddr(addr); 
-        }
-
-        /**
-         * Setter
-         *
-         * @param[in] port syslog server port
-         *
-         * @warning By default, syslog server port is 514
-         */
-        void setPort(uint16_t port) noexcept { 
-            m_Port = port;
-            m_LogBuf.setPort(port); 
-        }
-
-        /**
-         * Setter
-         *
-         * @param[in] facility log facility
-         *
-         * @warning By default, log facility is syslog::FacilityMng::Facility::LF_LOCAL7
-         */
-        void setFacility(FacilityMng::Facility facility) noexcept { m_LogBuf.setFacility(facility); }
-
-        /**
-         * Set log severity level in stream
-         *
-         * @param[in] os stream
-         * @param[in] lvl log severity level
-        */
-        friend ostream& operator<<(ostream& os, LogLvlMng::LogLvl lvl);
-    protected:
-        /**
-         * Setter
-         *
-         * @param[in] lvl log severity level
-         *
-         * @warning By default, log severity level is syslog::LogLvlMng::LogLvl::LL_DEBUG
-         */
-        void setLvl(LogLvlMng::LogLvl lvl) noexcept { m_LogBuf.setLvl(lvl); }
-    };
-
-    ostream& operator<<(
-        ostream& os, 
-        LogLvlMng::LogLvl lvl
-    ) 
-    { 
-        os.setLvl(lvl); 
-        return os;
-    }
-}
+    auto makeUDPClient_mt() noexcept { return ostream{std::make_unique<UDPClient>(), std::make_unique<details::mt>()}; }
+};
 
 #endif // __CPP_SYSLOG_CLIENT_SYSLOG_CLIENT_HPP

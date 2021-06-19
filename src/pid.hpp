@@ -1,5 +1,5 @@
 /**
- * @file proc_id.hpp
+ * @file pid.hpp
  * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
@@ -25,8 +25,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef __CPP_SYSLOG_CLIENT_PROC_ID_HPP
-#define __CPP_SYSLOG_CLIENT_PROC_ID_HPP
+#ifndef __CPP_SYSLOG_CLIENT_PID_HPP
+#define __CPP_SYSLOG_CLIENT_PID_HPP
 
 #if defined(WIN32)
  #include <windows.h>
@@ -40,26 +40,33 @@
  * Lib space
  */
 namespace syslog {
+/**
+ * Details
+ */
+namespace details {
     /**
      * Class for handle platform specific process ID type
      */
-    class ProcID;
+    class pid;
+};};
 
+////////////////////////////////////////////////////////////////////////////
+///
+//
+class syslog::details::pid final {
+private:
 #if defined(WIN32)
     using proc_id_t = DWORD; ///< GetCurrentProcessId() return type
 #else
     using proc_id_t = pid_t; ///< getpid() return type
 #endif // WIN32
-};
-
-class syslog::ProcID final {
 private:
     proc_id_t m_ProcID; ///< process ID <DWORD|pid_t>
 public:
     /**
      * Ctor
      */
-    ProcID(
+    pid(
     ) : 
         m_ProcID{
 #if defined(WIN32)
@@ -72,19 +79,19 @@ public:
 
     /**
      * Get process ID 
-     *
-     * @return <DWORD|pid_t>
+     * 
+     * @return int32_t
      */
-    proc_id_t get() const noexcept { return m_ProcID; }
+    int32_t get() const noexcept { return static_cast<int32_t>(m_ProcID); }
 
     /**
-     * Get process ID in hex format (string)
+     * Get process ID in hex format
      */
-    std::string getInHexFmt() const noexcept {
+    std::string hex() const noexcept {
         char res[32];
         sprintf(res, "%08x", m_ProcID);
         return res;
     }
 };
 
-#endif // __CPP_SYSLOG_CLIENT_PROC_ID_HPP
+#endif // __CPP_SYSLOG_CLIENT_PID_HPP

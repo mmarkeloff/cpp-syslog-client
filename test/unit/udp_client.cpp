@@ -1,5 +1,5 @@
 /**
- * @file sock_wrap.cpp
+ * @file udp_client.cpp
  * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
@@ -27,14 +27,14 @@
 
 #include <gtest/gtest.h>
 
-#include <sock_wrap.hpp>
+#include "client_impl.hpp"
 
 using namespace syslog;
 
 ////////////////////////////////////////////////////////////////////////////
 ///
 //
-class TestSockWrap : public ::testing::Test {
+class TestUDPClient : public ::testing::Test {
 protected:
     void SetUp() { }
 
@@ -44,77 +44,72 @@ protected:
 ////////////////////////////////////////////////////////////////////////////
 ///
 //
-TEST_F(TestSockWrap, init) {
-    SockWrap sock{"127.0.0.1", 8080};
+TEST_F(TestUDPClient, init) {
+    UDPClient clnt;
 
-    ASSERT_EQ(false, sock.isInitialised());
+    ASSERT_EQ(true, clnt.isInitialised());
 
-    sock.init();
+    clnt.setAddr("0.0.0.0");
 
-    ASSERT_EQ(true, sock.isInitialised());
+    ASSERT_EQ(true, clnt.isInitialised());
+
+    clnt.setPort(8080);
+
+    ASSERT_EQ(true, clnt.isInitialised());
 }
 
-TEST_F(TestSockWrap, moveClassInstanceByMoveCtor) {
-    SockWrap sock{"127.0.0.1", 8080};
+TEST_F(TestUDPClient, moveClassInstByMoveCtor) {
+    UDPClient clnt;
 
-    ASSERT_EQ(false, sock.isInitialised());
+    ASSERT_EQ(true, clnt.isInitialised());
 
-    sock.init();
+    clnt.setAddr("127.0.0.1");
+    clnt.setPort(8080);
 
-    ASSERT_EQ(true, sock.isInitialised());
+    ASSERT_EQ(true, clnt.isInitialised());
 
-    auto moved{std::move(sock)};
+    auto moved{std::move(clnt)};
 
     ASSERT_EQ(true, moved.isInitialised());
 }
 
-TEST_F(TestSockWrap, moveClassInstanceByMoveAssigmentOperator) {
-    SockWrap sock{"127.0.0.1", 8080};
+TEST_F(TestUDPClient, moveClassInstByMoveAssigmentOperator) {
+    UDPClient clnt;
 
-    ASSERT_EQ(false, sock.isInitialised());
+    ASSERT_EQ(true, clnt.isInitialised());
 
-    sock.init();
+    clnt.setAddr("0.0.0.0");
+    clnt.setPort(8080);
 
-    ASSERT_EQ(true, sock.isInitialised());
+    ASSERT_EQ(true, clnt.isInitialised());
 
-    SockWrap moved;
-    moved = std::move(sock);
+    UDPClient moved;
+    moved = std::move(clnt);
 
     ASSERT_EQ(true, moved.isInitialised());
 }
 
-TEST_F(TestSockWrap, setAddr) {
-    SockWrap sock{"127.0.0.1", 8080};
+TEST_F(TestUDPClient, setAddr) {
+    UDPClient clnt;
 
-    sock.setAddr("0.0.0.0");
+    ASSERT_EQ(true, clnt.isInitialised());
 
-    ASSERT_EQ(false, sock.isInitialised());
+    clnt.setAddr("0.0.0.0");
 
-    sock.init();
-
-    ASSERT_EQ(true, sock.isInitialised());
+    ASSERT_EQ(true, clnt.isInitialised());
 }
 
-TEST_F(TestSockWrap, getSock) {
-    SockWrap sock{"127.0.0.1", 8080};
+TEST_F(TestUDPClient, getSock) {
+    UDPClient clnt;
 
-    ASSERT_EQ(false, sock.isInitialised());
-
-    sock.init();
-
-    ASSERT_EQ(true, sock.isInitialised());
-
-    ASSERT_TRUE(-1 != sock.getSock());
+    ASSERT_EQ(true, clnt.isInitialised());
+    ASSERT_TRUE(-1 != clnt.getSock());
 }
 
-TEST_F(TestSockWrap, send) {
-    SockWrap sock{"127.0.0.1", 8080};
+TEST_F(TestUDPClient, sendData) {
+    UDPClient clnt;
 
-    ASSERT_EQ(false, sock.isInitialised());
+    ASSERT_EQ(true, clnt.isInitialised());
 
-    sock.init();
-
-    ASSERT_EQ(true, sock.isInitialised());
-
-    sock.send("test data");
+    clnt.send("test data");
 }

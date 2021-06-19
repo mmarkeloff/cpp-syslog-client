@@ -1,5 +1,5 @@
 /**
- * @file main.cpp
+ * @file client_int.hpp
  * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
@@ -25,44 +25,67 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <thread>
-#include <chrono>
-#include <vector>
+#ifndef __CPP_SYSLOG_CLIENT_CLIENT_INT_HPP
+#define __CPP_SYSLOG_CLIENT_CLIENT_INT_HPP
 
-#include "syslog_client.hpp"
+#include <string>
 
-#if defined(WIN32)
- #pragma comment(lib, "Ws2_32.lib")
-#endif
+/**
+ * Lib space
+ */
+namespace syslog {
+/**
+ * Details
+ */
+namespace details {
+    /**
+     * Interface for sending data
+     */
+    class IClient;
+};};
 
 ////////////////////////////////////////////////////////////////////////////
 ///
 //
-int main() {
-    auto syslog{syslog::makeUDPClient_st()};
-    syslog.setFacility(syslog::LogFacilityMng::LF_LOCAL3);
+class syslog::details::IClient {
+public:
+    /**
+     * Dtor
+     */
+    virtual ~IClient() = default;
 
-    syslog << syslog::LogLvlMng::LL_INFO << "Message " << 1 << std::endl;
+    /**
+     * Setter
+     *
+     * @param[in] addr host IP-address
+     */
+    virtual void setAddr(const char* addr) noexcept = 0;
 
-    auto moved{std::move(syslog)};
+    /**
+     * Setter
+     *
+     * @param[in] port host port
+     */
+    virtual void setPort(uint16_t port) noexcept = 0;
 
-    moved << syslog::LogLvlMng::LL_NOTICE << "Message " << 2 << std::endl;
+    /**
+     * Getter 
+     *
+     * @return Socket handler
+     */
+    virtual int32_t getSock() const noexcept = 0;
 
-    syslog = syslog::makeUDPClient_mt();
-    syslog.setLvl(syslog::LogLvlMng::LL_EMERG);
-    syslog.setAddr("127.0.0.1");
-    syslog.setPort(514);
+    /**
+     * Socket initialised?
+     */
+    virtual bool isInitialised() const noexcept = 0;
 
-    auto sendMsg = [&](){ 
-        // syslog::LogLvlMng::LL_EMERG
-        syslog << "Message from thread " << std::this_thread::get_id() << std::endl; 
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
-    };
+    /**
+     * Send data
+     *
+     * @param[in] buf data
+     */
+    virtual void send(std::string&& buf) const noexcept = 0;
+};
 
-    std::vector<std::thread> threads;
-    for (auto i = 0; i < 8; ++i)
-        threads.push_back(std::thread{sendMsg});
-
-    for (auto& thread : threads) 
-        thread.join();
-}
+#endif // __CPP_SYSLOG_CLIENT_CLIENT_INT_HPP

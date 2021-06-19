@@ -11,17 +11,15 @@ C++ header only stream-based syslog client library.
 ```cpp
 #include "syslog_client.hpp"
 
-int main(int argc, char* argv[]) {
-    syslog::ostream syslogClient;
+int main() {
+    auto syslog{syslog::makeUDPClient_st()};
 
-    // by default syslog client configured on 127.0.0.1:514
+    // by default UDP syslog client configured on 127.0.0.1:514
     // so you can overwrite it
-    syslogClient.setAddr("127.0.0.1");
-    syslogClient.setPort(1000);
+    syslog.setAddr("127.0.0.1");
+    syslog.setPort(1000);
 
-    syslogClient << syslog::LogLvlMng::LL_INFO << "message" << std::endl;
-
-    return 0;
+    syslog << syslog::LogLvlMng::LL_INFO << "message" << std::endl;
 }
 ```
 
