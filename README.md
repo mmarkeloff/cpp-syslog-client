@@ -29,7 +29,7 @@ See [sample project](sample) for more complete usage examples.
 
 ## Library details
 
-[cpp-syslog-client](https://github.com/mmarkeloff/cpp-syslog-client) fully supports syslog PRI: [RFC]((https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1))
+[cpp-syslog-client](https://github.com/mmarkeloff/cpp-syslog-client) fully supports syslog PRI: [RFC](https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1)
 
 ### Log severity level
 
