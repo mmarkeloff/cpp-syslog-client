@@ -44,6 +44,8 @@ download_project(
     ${UPDATE_DISCONNECTED_IF_AVAILABLE}
 )
 
+find_package(Threads REQUIRED)
+
 include_directories(../include/cpp-syslog-client)
 include_directories(${cpp-crtp-singleton_SOURCE_DIR}/include/cpp-crtp-singleton)
 
@@ -51,3 +53,5 @@ add_executable(
     cpp-syslog-client-sample-project
     main.cpp
 )
+
+target_link_libraries(${CMAKE_PROJECT_NAME} Threads::Threads)
