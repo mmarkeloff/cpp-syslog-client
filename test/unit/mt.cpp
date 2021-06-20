@@ -82,7 +82,7 @@ TEST_F(TestMT, simpleByMultiThreads) {
     };
 
     std::vector<std::thread> threads;
-    for (std::size_t i = 0; i < 16; i++)
+    for (auto i = 0; i < 16; i++)
         threads.push_back(std::thread{f});
 
     for (auto& thread : threads) 
@@ -101,7 +101,7 @@ TEST_F(TestMT, recursiveByMultiThreads) {
     };
 
     std::vector<std::thread> threads;
-    for (std::size_t i = 0; i < 16; i++)
+    for (auto i = 0; i < 16; i++)
         threads.push_back(std::thread{f});
 
     for (auto& thread : threads) 
