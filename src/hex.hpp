@@ -48,7 +48,7 @@ namespace details {
     template<class T>
     std::string int2hex(T val) {
         std::stringstream ss;
-        ss << "0x" << std::setfill('0') << std::setw(sizeof(T) * 2) << std::hex << val;
+        ss << std::setfill('0') << std::setw(sizeof(T) * 2) << std::hex << val;
         return ss.str();
     }
 };};

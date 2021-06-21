@@ -54,7 +54,7 @@ TEST_F(TestPID, hex) {
 
 TEST_F(TestPID, getEqualHex) {
     char res[32];
-    sprintf(res, "0x%08x", pid{}.get());
+    sprintf(res, "%08x", pid{}.get());
 
     ASSERT_EQ(res, pid{}.hex());
 }

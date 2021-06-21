@@ -45,13 +45,13 @@ protected:
 ///
 //
 TEST_F(TestInt2Hex, signedInt) {
-    ASSERT_EQ("0x00000000", int2hex(0));
-    ASSERT_EQ("0x00000001", int2hex(1));
-    ASSERT_EQ("0x0000000a", int2hex(10));
-    ASSERT_EQ("0x00000064", int2hex(100));
-    ASSERT_EQ("0x000000c8", int2hex(200));
-    ASSERT_EQ("0x000003e8", int2hex(1000));
-    ASSERT_EQ("0xffffffff", int2hex(-1));
-    ASSERT_EQ("0xfffffff6", int2hex(-10));
-    ASSERT_EQ("0xffffff9c", int2hex(-100));
+    ASSERT_EQ("00000000", int2hex(0));
+    ASSERT_EQ("00000001", int2hex(1));
+    ASSERT_EQ("0000000a", int2hex(10));
+    ASSERT_EQ("00000064", int2hex(100));
+    ASSERT_EQ("000000c8", int2hex(200));
+    ASSERT_EQ("000003e8", int2hex(1000));
+    ASSERT_EQ("ffffffff", int2hex(-1));
+    ASSERT_EQ("fffffff6", int2hex(-10));
+    ASSERT_EQ("ffffff9c", int2hex(-100));
 }
