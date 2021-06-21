@@ -22,25 +22,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-FROM debian as build
+FROM debian
 
+# install requirements
 RUN apt-get update && \
     apt-get install -y g++ && \
     apt-get install -y git && \
     apt-get install -y cmake && \
     apt-get install -y syslog-ng
 
-ADD ./include /app/include
-ADD ./src /app/src 
-ADD ./test/integration /app/test/integration
-ADD ./cmake /app/cmake
+# add project directory to an image
+ADD . /cpp-syslog-client
 
-COPY test_pkg/bootup.sh /app/bootup.sh
-COPY test_pkg/cpp-syslog-client.conf /etc/syslog-ng/conf.d/cpp-syslog-client.conf
+# copy package content
+COPY test_pkg/bootup.sh /cpp-syslog-client/bootup.sh
+COPY test_pkg/udp514.conf /etc/syslog-ng/conf.d/udp514.conf
 
-WORKDIR /app/test/integration/build
+# build integration tests
+WORKDIR /cpp-syslog-client/test/integration/build
 RUN cmake .. && make
 
-WORKDIR /app
-
+WORKDIR /cpp-syslog-client
 CMD ["./bootup.sh"]

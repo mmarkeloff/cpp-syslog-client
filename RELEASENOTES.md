@@ -1,5 +1,11 @@
 # Summary of changes
 
+## Changes for version 1.0.3 (21.06.2021)
+
+### Bug fixes
+
+- Windows support
+
 ## Changes for version 1.0.2 (19.06.2021)
 
 ### Bug fixes

@@ -26,10 +26,11 @@
 
 set -e
 
-# starting services manually
+# start services manually
 /etc/init.d/syslog-ng start 1>/dev/null 2>&1
 
-# running integration tests with full output
-/app/test/integration/build/cpp-syslog-client-integration-tests
+# run integration tests
+cd test/integration/build
+make test
 
 exit 0
