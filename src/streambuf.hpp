@@ -34,6 +34,7 @@
 
 #include "level.hpp"
 #include "facility.hpp"
+#include "hex.hpp"
 #include "pid.hpp"
 #include "client_int.hpp"
 #include "tmode.hpp"
@@ -187,14 +188,9 @@ protected:
             m_Mode->unlock();
 
             if (ready) {
-                char pri[32];
-
                 m_Mode->lock();
-                sprintf_s(
-                    pri,
-                    "<%u>",
-                    (m_Facility << 3) + m_Lvl // https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1
-                );
+                // https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1
+                auto pri{"<" + int2hex((m_Facility << 3) + m_Lvl) + ">"};
                 m_Mode->unlock();
 
                 std::string data{pri};

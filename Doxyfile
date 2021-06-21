@@ -847,6 +847,7 @@ WARN_LOGFILE           =
 INPUT                  = include/cpp-syslog-client/syslog_client.hpp \
                          src/level.hpp \
                          src/facility.hpp \
+                         src/hex.hpp \
                          src/pid.hpp \
                          src/winwsa.hpp \
                          src/client_int.hpp \

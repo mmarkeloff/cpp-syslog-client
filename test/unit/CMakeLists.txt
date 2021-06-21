@@ -71,6 +71,7 @@ add_executable(
     cpp-syslog-client-unit-tests
     st.cpp
     mt.cpp
+    hex.cpp
     pid.cpp
     udp_client.cpp
 )

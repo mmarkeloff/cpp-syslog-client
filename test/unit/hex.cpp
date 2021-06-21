@@ -1,5 +1,5 @@
 /**
- * @file pid.hpp
+ * @file hex.cpp
  * @authors Max Markeloff (https://github.com/mmarkeloff)
  */
 
@@ -25,67 +25,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef __CPP_SYSLOG_CLIENT_PID_HPP
-#define __CPP_SYSLOG_CLIENT_PID_HPP
-
-#if defined(WIN32)
- #include <windows.h>
-#else
- #include <unistd.h>
-#endif // WIN32
-#include <string.h>
-#include <string>
+#include <gtest/gtest.h>
 
 #include "hex.hpp"
 
-/**
- * Lib space
- */
-namespace syslog {
-/**
- * Details
- */
-namespace details {
-    /**
-     * Class for handle platform specific process ID type
-     */
-    class pid;
-};};
+using namespace syslog::details;
 
 ////////////////////////////////////////////////////////////////////////////
 ///
 //
-class syslog::details::pid final {
-private:
-    int32_t m_PID; ///< process ID
-public:
-    /**
-     * Ctor
-     */
-    pid(
-    ) : 
-        m_PID{
-            static_cast<int32_t>(
-#if defined(WIN32)
-                GetCurrentProcessId()
-#else
-                getpid()
-#endif // WIN32
-            )
-        } {
-    }
+class TestInt2Hex : public ::testing::Test {
+protected:
+    void SetUp() { }
 
-    /**
-     * Get process ID 
-     * 
-     * @return int32_t
-     */
-    int32_t get() const noexcept { return m_PID; }
-
-    /**
-     * Get process ID in hex format
-     */
-    std::string hex() const noexcept { return int2hex(m_PID); }
+    void TearDown() { }
 };
 
-#endif // __CPP_SYSLOG_CLIENT_PID_HPP
+////////////////////////////////////////////////////////////////////////////
+///
+//
+TEST_F(TestInt2Hex, signedInt) {
+    ASSERT_EQ("0x00000000", int2hex(0));
+    ASSERT_EQ("0x00000001", int2hex(1));
+    ASSERT_EQ("0x0000000a", int2hex(10));
+    ASSERT_EQ("0x00000064", int2hex(100));
+    ASSERT_EQ("0x000000c8", int2hex(200));
+    ASSERT_EQ("0x000003e8", int2hex(1000));
+    ASSERT_EQ("0xffffffff", int2hex(-1));
+    ASSERT_EQ("0xfffffff6", int2hex(-10));
+    ASSERT_EQ("0xffffff9c", int2hex(-100));
+}
