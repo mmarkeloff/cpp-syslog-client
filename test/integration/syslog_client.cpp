@@ -52,6 +52,20 @@ protected:
     }
 };
 
+////////////////////////////////////////////////////////////////////////////
+///
+//
+class ModuleNameFormatter : public IFormatter {
+private:
+    std::string m_ModuleName;
+public:
+    ModuleNameFormatter(std::string&& module_name) : m_ModuleName{std::move(module_name)} {}
+
+    std::string key() const noexcept override { return "module"; }
+
+    std::string value() const noexcept override { return m_ModuleName; }
+};
+
 #include <thread>
 #include <chrono>
 
@@ -342,4 +356,96 @@ TEST_F(TestSyslogClient, asyncSendMsg_mt) {
 
     std::ifstream log{logPath};
     ASSERT_TRUE(std::string::npos != tail(log).find("Async test message (mt)"));
+}
+
+TEST_F(TestSyslogClient, sendMsgWithNoFormattersOverUDP_st) {
+    auto syslog{makeUDPClient_st()};
+    syslog.cleanFormatters();
+
+    syslog << LogLvlMng::LL_INFO << "Test message with no formatter flags (st)" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    auto line{tail(log)};
+
+    ASSERT_TRUE(std::string::npos != line.find("Test message with no formatter flags (st)"));
+    ASSERT_TRUE(std::string::npos == line.find("["));
+    ASSERT_TRUE(std::string::npos == line.find("]"));
+}
+
+TEST_F(TestSyslogClient, sendMsgWithNoFormattersOverUDP_mt) {
+    auto syslog{makeUDPClient_mt()};
+    syslog.cleanFormatters();
+
+    syslog << LogLvlMng::LL_INFO << "Test message with no formatter flags (mt)" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    auto line{tail(log)};
+
+    ASSERT_TRUE(std::string::npos != line.find("Test message with no formatter flags (mt)"));
+    ASSERT_TRUE(std::string::npos == line.find("["));
+    ASSERT_TRUE(std::string::npos == line.find("]"));
+}
+
+TEST_F(TestSyslogClient, sendMsgWithDefaultFormattersOverUDP_st) {
+    auto syslog{makeUDPClient_st()};
+
+    syslog << LogLvlMng::LL_INFO << "Test message with default formatter flags (st)" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    auto line{tail(log)};
+
+    ASSERT_TRUE(std::string::npos != line.find("Test message with default formatter flags (st)"));
+    ASSERT_TRUE(std::string::npos != line.find("[pid"));
+    ASSERT_TRUE(std::string::npos != line.find("]"));
+}
+
+TEST_F(TestSyslogClient, sendMsgWithDefaultFormattersOverUDP_mt) {
+    auto syslog{makeUDPClient_mt()};
+
+    syslog << LogLvlMng::LL_INFO << "Test message with default formatter flags (mt)" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    auto line{tail(log)};
+
+    ASSERT_TRUE(std::string::npos != line.find("Test message with default formatter flags (mt)"));
+    ASSERT_TRUE(std::string::npos != line.find("[pid"));
+    ASSERT_TRUE(std::string::npos != line.find("]"));
+}
+
+TEST_F(TestSyslogClient, sendMsgWithNewFormatterOverUDP_st) {
+    auto syslog{makeUDPClient_st()};
+    syslog.addFormatter(std::make_shared<ModuleNameFormatter>("test"));
+
+    syslog << LogLvlMng::LL_INFO << "Test message with new formatter flag (st)" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    auto line{tail(log)};
+
+    ASSERT_TRUE(std::string::npos != line.find("Test message with new formatter flag (st)"));
+    ASSERT_TRUE(std::string::npos != line.find("[pid"));
+    ASSERT_TRUE(std::string::npos != line.find("[module"));
+    ASSERT_TRUE(std::string::npos != line.find("]"));
+}
+
+TEST_F(TestSyslogClient, sendMsgWithNewFormatterOverUDP_mt) {
+    auto syslog{makeUDPClient_st()};
+    syslog.addFormatter(std::make_shared<ModuleNameFormatter>("test"));
+
+    syslog << LogLvlMng::LL_INFO << "Test message with new formatter flag (mt)" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    std::ifstream log{logPath};
+    auto line{tail(log)};
+
+    ASSERT_TRUE(std::string::npos != line.find("Test message with new formatter flag (mt)"));
+    ASSERT_TRUE(std::string::npos != line.find("[pid"));
+    ASSERT_TRUE(std::string::npos != line.find("[module"));
+    ASSERT_TRUE(std::string::npos != line.find("]"));
+
+    system("cat /var/log/syslog");
 }

@@ -38,6 +38,20 @@
 ////////////////////////////////////////////////////////////////////////////
 ///
 //
+class ModuleNameFormatter : public syslog::IFormatter {
+private:
+    std::string m_ModuleName;
+public:
+    ModuleNameFormatter(std::string&& module_name) : m_ModuleName{std::move(module_name)} {}
+
+    std::string key() const noexcept override { return "module"; }
+
+    std::string value() const noexcept override { return m_ModuleName; }
+};
+
+////////////////////////////////////////////////////////////////////////////
+///
+//
 int main() {
     auto syslog{syslog::makeUDPClient_st()};
     syslog.setFacility(syslog::LogFacilityMng::LF_LOCAL3);
@@ -65,4 +79,8 @@ int main() {
 
     for (auto& thread : threads) 
         thread.join();
+
+    syslog.addFormatter(std::make_shared<ModuleNameFormatter>("main")); 
+
+    syslog << syslog::LogLvlMng::LL_INFO << "Message with new formatter flag" << std::endl;
 }

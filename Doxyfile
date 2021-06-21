@@ -853,6 +853,9 @@ INPUT                  = include/cpp-syslog-client/syslog_client.hpp \
                          src/client_int.hpp \
                          src/client_impl.hpp \
                          src/tmode.hpp \
+                         src/fmt_int.hpp \
+                         src/basic_fmt_impl.hpp \
+                         src/make_tmpl.hpp \
                          src/streambuf.hpp \
                          src/ostream.hpp
 

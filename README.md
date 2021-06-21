@@ -74,6 +74,34 @@ From [rfc5424](https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1)
 | LF_LOCAL6                           | 22             | local use 6  (local6)                    |
 | LF_LOCAL7                           | 23             | local use 7  (local7)                    |
 
+### Formatting
+
+You can define your own flags by inheriting the syslog::IFormatter interface and implementing the key() and value() abstract methods.
+
+```cpp
+#include "syslog_client.hpp"
+
+class ModuleNameFormatter : public syslog::IFormatter {
+private:
+    std::string m_ModuleName;
+public:
+    ModuleNameFormatter(std::string&& module_name) : m_ModuleName{std::move(module_name)} {}
+    std::string key() const noexcept override { return "module"; }
+    std::string value() const noexcept override { return m_ModuleName; }
+};
+
+int main() {
+    auto syslog{syslog::makeUDPClient_st()};
+    syslog.addFormatter(std::make_shared<ModuleNameFormatter>("main"));
+
+    syslog << syslog::LogLvlMng::LL_INFO << "message" << std::endl;
+}
+```
+
+```bash
+Jun 21 19:08:33 127.0.0.1 [pid 00000015] [module main] message
+```
+
 ## Documentation
 
 See automatic generated [docs](https://mmarkeloff.github.io/cpp-syslog-client/) for more information.

@@ -74,6 +74,8 @@ add_executable(
     hex.cpp
     pid.cpp
     udp_client.cpp
+    pid_formatter.cpp
+    make_tmpl.cpp
 )
 
 enable_testing()

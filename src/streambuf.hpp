@@ -31,12 +31,15 @@
 #include <streambuf>
 #include <string>
 #include <memory>
+#include <vector>
 
 #include "level.hpp"
 #include "facility.hpp"
-#include "pid.hpp"
 #include "client_int.hpp"
 #include "tmode.hpp"
+#include "fmt_int.hpp"
+#include "basic_fmt_impl.hpp"
+#include "make_tmpl.hpp"
 
 /**
  * Lib space
@@ -57,12 +60,12 @@ namespace details {
 //
 class syslog::details::streambuf final : public std::streambuf {
 private:
-    std::string                       m_Buf; ///< data to send
-    LogLvlMng::LogLvl                 m_Lvl; ///< log severity level
-    LogFacilityMng::LogFacility       m_Facility; ///< log facility
-    details::pid                      m_PID; ///< process ID
-    std::unique_ptr<details::IClient> m_Clnt; ///< data sender
-    std::unique_ptr<details::TMode>   m_Mode; ///< <single|multi> thread
+    std::string                              m_Buf; ///< data to send
+    LogLvlMng::LogLvl                        m_Lvl; ///< log severity level
+    LogFacilityMng::LogFacility              m_Facility; ///< log facility
+    std::unique_ptr<details::IClient>        m_Clnt; ///< data sender
+    std::unique_ptr<details::TMode>          m_Mode; ///< <single|multi> thread
+    std::vector<std::shared_ptr<IFormatter>> m_Formatters; ///< formatter flags
 public:
     /**
      * Ctor
@@ -74,7 +77,8 @@ public:
         m_Lvl{LogLvlMng::LogLvl::LL_DEBUG},
         m_Facility{LogFacilityMng::LogFacility::LF_LOCAL7},
         m_Clnt{std::move(clnt)},
-        m_Mode{std::move(mode)} {
+        m_Mode{std::move(mode)},
+        m_Formatters{std::make_shared<details::PIDFormatter>()} {
     }
 
     /**
@@ -96,9 +100,9 @@ public:
         m_Buf{std::move(other.m_Buf)},
         m_Lvl{other.m_Lvl},
         m_Facility{other.m_Facility},
-        m_PID{other.m_PID},
         m_Clnt{std::move(other.m_Clnt)},
-        m_Mode{std::move(other.m_Mode)} {
+        m_Mode{std::move(other.m_Mode)},
+        m_Formatters{std::move(other.m_Formatters)} {
     }
 
     /**
@@ -112,9 +116,9 @@ public:
         m_Buf = std::move(other.m_Buf);
         m_Lvl = other.m_Lvl;
         m_Facility = other.m_Facility;
-        m_PID = other.m_PID;
         m_Clnt = std::move(other.m_Clnt);
         m_Mode = std::move(other.m_Mode);
+        m_Formatters = std::move(other.m_Formatters);
 
         return *this;
     }
@@ -174,6 +178,30 @@ public:
         m_Clnt->setPort(port); 
         m_Mode->unlock(); 
     }
+
+    /**
+     * Setter
+     *
+     * @param[in] formatter new formatter flag
+     *
+     * @warning Lock zone
+     */
+    void addFormatter(std::shared_ptr<IFormatter>&& formatter) noexcept {
+        m_Mode->lock();
+        m_Formatters.emplace_back(std::move(formatter));
+        m_Mode->unlock(); 
+    }
+
+    /**
+     * Remove all formatter flags
+     * 
+     * @warning Lock zone
+     */
+    void cleanFormatters() noexcept {
+        m_Mode->lock();
+        m_Formatters.clear();
+        m_Mode->unlock(); 
+    }
 protected:
     /**
      * Send data to syslog server
@@ -194,8 +222,14 @@ protected:
 
                 std::string data{pri};
                 data += " ";
-                data += m_PID.hex();
-                data += " ";
+
+                m_Mode->lock();
+                for (const auto& formatter : m_Formatters) {
+                    data += details::makeTmpl(formatter->key(), formatter->value());
+                    data += " ";
+                }
+                m_Mode->unlock();
+
                 data += m_Buf;
 
                 m_Mode->lock();

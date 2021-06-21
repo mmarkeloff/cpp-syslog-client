@@ -35,6 +35,7 @@
 #include "facility.hpp"
 #include "client_int.hpp"
 #include "tmode.hpp"
+#include "fmt_int.hpp"
 #include "streambuf.hpp"
 
 /**
@@ -135,6 +136,18 @@ public:
      * @warning By default, log severity level is syslog::LogLvlMng::LogLvl::LL_DEBUG
      */
     void setLvl(LogLvlMng::LogLvl lvl) noexcept { m_Buf.setLvl(lvl); }
+
+    /**
+     * Setter
+     *
+     * @param[in] formatter new formatter flag
+     */
+    void addFormatter(std::shared_ptr<IFormatter>&& formatter) noexcept { m_Buf.addFormatter(std::move(formatter)); }
+
+    /**
+     * Remove all formatter flags
+     */
+    void cleanFormatters() noexcept { m_Buf.cleanFormatters(); }
 };
 
 /**
