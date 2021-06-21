@@ -89,7 +89,7 @@ public:
      */
     std::string hex() const noexcept {
         char res[32];
-        sprintf(res, "%08x", m_ProcID);
+        sprintf_s(res, "%08x", m_ProcID);
         return res;
     }
 };

@@ -104,12 +104,6 @@ public:
      */
     mt() : m_OwnershipDepth{0} {}
 
-    ~mt() { 
-        m_Mtx.unlock(); 
-        for (auto i = 0; i < m_OwnershipDepth; ++i)
-            m_RecMtx.unlock();
-    }
-
     void lock() noexcept override { m_Mtx.lock(); }
 
     void unlock() noexcept override { m_Mtx.unlock(); }

@@ -53,12 +53,19 @@ namespace details {
 ///
 //
 class syslog::details::WinWSA final : public crtp_st::Base<WinWSA> {
-private:
-    WSADATA m_WSAData;
 public:
-    WinWSA() { WSAStartup(MAKEWORD(1, 1), &m_WSAData); }
+    /**
+     * WSAStartup()
+     */
+    void startup() const noexcept {
+        WSADATA data;
+        WSAStartup(MAKEWORD(1, 1), &data);
+    }
 
-    ~WinWSA() { WSACleanup(); }
+    /**
+     * WSACleanup()
+     */
+    void cleanup() const noexcept { WSACleanup(); }
 };
 
 #endif // WIN32

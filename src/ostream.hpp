@@ -81,12 +81,17 @@ public:
     /**
      * Move ctor
      */
-    ostream(ostream&& other) : m_Buf{std::move(other.m_Buf)} { }
+    ostream(
+        ostream&& other
+    ) noexcept : 
+        m_Buf{std::move(other.m_Buf)},
+        std::ostream{&m_Buf} {
+    }
 
     /**
      * Move assignment operator
      */
-    ostream& operator=(ostream&& other) {
+    ostream& operator=(ostream&& other) noexcept {
         // self-assignment check
         if (&other == this)
             return *this;

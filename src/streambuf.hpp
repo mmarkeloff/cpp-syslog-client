@@ -92,7 +92,7 @@ public:
      */
     streambuf(
         streambuf&& other
-    ) :
+    ) noexcept :
         m_Buf{std::move(other.m_Buf)},
         m_Lvl{other.m_Lvl},
         m_Facility{other.m_Facility},
@@ -104,7 +104,7 @@ public:
     /**
      * Move assignment operator
      */
-    streambuf& operator=(streambuf&& other) {
+    streambuf& operator=(streambuf&& other) noexcept {
         // self-assignment check
         if (&other == this)
             return *this;
@@ -190,7 +190,7 @@ protected:
                 char pri[32];
 
                 m_Mode->lock();
-                sprintf(
+                sprintf_s(
                     pri,
                     "<%u>",
                     (m_Facility << 3) + m_Lvl // https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1

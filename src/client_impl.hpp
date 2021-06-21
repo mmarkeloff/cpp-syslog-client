@@ -76,7 +76,7 @@ public:
         m_Sock{DEFAULT_SOCK} 
     {
 #if defined(WIN32)
-        auto wsa{details::WinWSA::instance()};
+        details::WinWSA::instance().startup();
 #endif // WIN32
         m_Sock = socket(AF_INET, SOCK_DGRAM, 0);
     }
@@ -98,7 +98,7 @@ public:
      */
     explicit UDPClient(
         UDPClient&& other
-    ) : 
+    ) noexcept : 
         m_Addr{other.m_Addr}, 
         m_Port{other.m_Port}, 
         m_Sock{other.m_Sock} 
@@ -111,7 +111,7 @@ public:
      *
      * @param[in] other moving syslog::UDPClient class instance
      */
-    UDPClient& operator=(UDPClient&& other) {
+    UDPClient& operator=(UDPClient&& other) noexcept {
         // self-assignment check
         if (&other == this)
             return *this;
@@ -131,6 +131,7 @@ public:
         if (isInitialised()) {
 #if defined(WIN32)
             closesocket(m_Sock);
+            details::WinWSA::instance().cleanup();
 #else
             close(m_Sock);
 #endif // WIN32

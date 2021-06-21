@@ -1,5 +1,6 @@
 .vscode
 .vs
+build
 test/unit/build
 test/unit/out
 test/integration/out
