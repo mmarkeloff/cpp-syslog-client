@@ -34,7 +34,6 @@
 
 #include "level.hpp"
 #include "facility.hpp"
-#include "hex.hpp"
 #include "pid.hpp"
 #include "client_int.hpp"
 #include "tmode.hpp"
@@ -190,7 +189,7 @@ protected:
             if (ready) {
                 m_Mode->lock();
                 // https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1
-                auto pri{"<" + int2hex((m_Facility << 3) + m_Lvl) + ">"};
+                auto pri{"<" + std::to_string((m_Facility << 3) + m_Lvl) + ">"};
                 m_Mode->unlock();
 
                 std::string data{pri};
