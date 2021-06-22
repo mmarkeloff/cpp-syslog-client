@@ -76,7 +76,7 @@ From [rfc5424](https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1)
 
 ### Formatting
 
-You can define your own flags by inheriting the syslog::IFormatter interface and implementing the key() and value() abstract methods.
+You can define your own flags by inheriting the [syslog::IFormatter](https://github.com/mmarkeloff/cpp-syslog-client/blob/ff9e66a54d8fcfdf5a8fcfc14162b69efbc258fb/src/fmt_int.hpp#L43-L59) interface and implementing the key() and value() abstract methods.
 
 ```cpp
 #include "syslog_client.hpp"
