@@ -35,7 +35,7 @@ else()
     set(UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
 endif()
 
-include(cmake/DownloadProject.cmake)
+include(DownloadProject/DownloadProject.cmake)
 
 download_project(
     PROJ cpp-crtp-singleton
